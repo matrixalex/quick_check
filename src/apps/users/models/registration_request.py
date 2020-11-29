@@ -1,7 +1,7 @@
 from django.db import models
 from src.apps.core.models import SafeModel
 from django.utils.translation import gettext_lazy as _
-from .user import UserType
+from .user_type import UserType
 
 
 class RegistrationStatus(models.IntegerChoices):
@@ -30,7 +30,7 @@ class RegistrationRequest(SafeModel):
 
     def __str__(self):
         return 'Заявка на регистрацию {}: {}'.format(
-            self.registration_user, UserType.get_user_type_str(self.registration_user.status)
+            self.registration_user, self.registration_user.status
         )
 
     def save(self, *args, **kwargs):

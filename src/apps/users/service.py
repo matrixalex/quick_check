@@ -7,7 +7,7 @@ from django.core.validators import validate_email
 from .models import User, RegistrationRequest
 from django.contrib.auth import authenticate as auth, login
 from src.quick_check import settings
-from .models.user import UserType
+from .models import user_type
 from ..core.errors import ErrorMessages
 from src.apps.core import service as server_service
 
@@ -100,11 +100,11 @@ def start_reset_password_session(user: User) -> None:
 
 def register_user(first_name: str, last_name: str, email: str, phone_number: str,
                   password: str, middle_name: str = '', registration_reason: str = '',
-                  user_type: int = UserType.PUPIL) -> Tuple[bool, str]:
+                  user_profile_type: int = user_type.PUPIL) -> Tuple[bool, str]:
     """
     Регистрация пользователя в системе
 
-    :param user_type: int -> UserType
+    :param user_profile_type: int
     :param first_name: str
     :param last_name: str
     :param email: str
@@ -121,7 +121,7 @@ def register_user(first_name: str, last_name: str, email: str, phone_number: str
     user = get_user_by_email(email)
     if user:
         return False, ErrorMessages.EMAIL_EXISTS
-    status = UserType.check_user_type(user_type)
+    status = user_type.UserType.check_user_type(user_profile_type)
     if not status:
         return False, ErrorMessages.WRONG_USER_TYPE
     user = User.objects.create(email=email, first_name=first_name, last_name=last_name, middle_name=middle_name,

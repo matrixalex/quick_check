@@ -4,37 +4,14 @@ from django.db import models
 from typing import List
 from django.utils.translation import gettext_lazy as _
 import uuid
-
-
-class UserType(models.IntegerChoices):
-    """
-    Класс типов пользователей
-    """
-    SYSTEM_ADMIN = 0, _('Администратор системы')
-    ADMIN = 1, _('Администратор учебного заведения')
-    TEACHER = 2, _('Учитель')
-    PUPIL = 3, _('Ученик')
-
-    @classmethod
-    def check_user_type(cls, user_type):
-        return user_type in dict(cls.choices)
-
-    @classmethod
-    def get_user_type_str(cls, user_type):
-        return dict(cls.choices)[user_type]
-
-    @classmethod
-    def get_superior_user_type(cls, user_type):
-        if user_type == cls.SYSTEM_ADMIN:
-            user_type += 1
-        return cls.get_user_type_str(user_type - 1)
+from .user_type import SYSTEM_ADMIN, UserType
 
 
 class UserManager(SafeModelManager, BaseUserManager):
     """
     Менеджер пользователей
     """
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name, last_name, password=None, status=SYSTEM_ADMIN):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -42,12 +19,14 @@ class UserManager(SafeModelManager, BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         email = self.normalize_email(email)
-
+        if isinstance(status, int):
+            status = UserType.objects.get(pk=SYSTEM_ADMIN)
         user = self.model(
             email=email,
             username=email,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            status=status
         )
 
         user.set_password(password)
@@ -59,17 +38,18 @@ class UserManager(SafeModelManager, BaseUserManager):
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
+        print('create superuser')
         user = self.create_user(
             email,
             password=password,
             first_name=first_name,
             last_name=last_name,
+            status=UserType.objects.get(pk=SYSTEM_ADMIN)
         )
         user.save(using=self._db)
         user.is_superuser = True
         user.is_staff = True
         user.is_accepted = True
-        user.status = UserType.SYSTEM_ADMIN
         user.set_password(password)
         user.save()
         user.user_permissions.set(Permission.objects.all())
@@ -99,7 +79,8 @@ class User(SafeModel, AbstractUser):
 
     email = models.EmailField(unique=True, null=False, max_length=MAX_LENGTH, verbose_name=_('Email пользователя'))
 
-    status = models.IntegerField(default=UserType.PUPIL, choices=UserType.choices, verbose_name=_('Тип учетной записи'))
+    status = models.ForeignKey('users.UserType', on_delete=models.CASCADE, related_name='user_status',
+                               verbose_name=_('Тип учетной записи'))
 
     is_accepted = models.BooleanField(default=False, verbose_name=_('Пользователь активен'))
 

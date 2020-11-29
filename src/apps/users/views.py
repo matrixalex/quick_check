@@ -2,7 +2,7 @@ from django.contrib.auth import logout
 from django.views import View
 from django.shortcuts import render, redirect
 from . import service as user_services
-from .models.user import UserType
+from .models.user_type import UserType, PUPIL
 from ..core.errors import ErrorMessages
 from src.quick_check import settings
 from ..core.message import DataInfoMessage
@@ -49,17 +49,17 @@ class RegistrationView(View):
         middle_name = request.POST.get('middle_name', '')
         phone_number = request.POST.get('phone_number')
         registration_reason = request.POST.get('registration_reason', '')
-        user_type = int(request.POST.get('user_type', UserType.PUPIL))
+        user_type = int(request.POST.get('user_type', PUPIL))
         status, message = user_services.register_user(first_name, last_name, email, phone_number, password,
                                                       middle_name=middle_name, registration_reason=registration_reason,
-                                                      user_type=user_type)
+                                                      user_profile_type=user_type)
         print(status, message)
         if not status:
             data['error'] = message
             return render(request, 'registration.html', context=data)
+        user_type = UserType.objects.get(pk=user_type)
         data['message'] = DataInfoMessage.REGISTRATION_SUCCESS.format(
-            UserType.get_user_type_str(user_type),
-            UserType.get_superior_user_type(user_type)
+            user_type, user_type.get_superior_user_type()
         )
         return render(request, 'registration.html', context=data)
 
