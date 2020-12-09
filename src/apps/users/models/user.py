@@ -82,6 +82,12 @@ class User(SafeModel, AbstractUser):
     status = models.ForeignKey('users.UserType', on_delete=models.CASCADE, related_name='user_status',
                                verbose_name=_('Тип учетной записи'))
 
+    org = models.ForeignKey('core.Organization', on_delete=models.CASCADE, verbose_name=_('Организация'),
+                            related_name='user_org', null=True, blank=True)
+
+    study_class = models.ForeignKey('core.StudyClass', on_delete=models.CASCADE, verbose_name=_('Класс'),
+                                    related_name='user_study_class', null=True, blank=True)
+
     is_accepted = models.BooleanField(default=False, verbose_name=_('Пользователь активен'))
 
     REQUIRED_FIELDS = ['first_name', 'last_name']
