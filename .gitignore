@@ -13,3 +13,5 @@ tests.py
 /httpRequests/
 
 /.idea
+
+migrations
