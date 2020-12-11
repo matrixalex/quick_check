@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from src.quick_check.settings import NEED_CHECK_DATABASE
 
 
 class BaseConfig(AppConfig):
@@ -9,14 +10,15 @@ class BaseConfig(AppConfig):
     models_to_check = {}
 
     def check_database(self):
-        for model_name, methods_to_check in self.models_to_check.items():
-            model = AppConfig.get_model(self, model_name)
-            for method in methods_to_check:
-                try:
-                    # Необходимо обеспечить классовый метод без параметров, лень расширять
-                    getattr(model, method)()
-                except AttributeError:
-                    print('model {} has no check method {}, skipping'.format(model, method))
+        if NEED_CHECK_DATABASE:
+            for model_name, methods_to_check in self.models_to_check.items():
+                model = AppConfig.get_model(self, model_name)
+                for method in methods_to_check:
+                    try:
+                        # Необходимо обеспечить классовый метод без параметров, лень расширять
+                        getattr(model, method)()
+                    except AttributeError:
+                        print('model {} has no check method {}, skipping'.format(model, method))
 
     def ready(self):
         self.check_database()

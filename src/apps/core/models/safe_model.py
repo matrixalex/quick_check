@@ -57,6 +57,4 @@ class SafeModel(models.Model):
         return 'Safe model'
 
     def save(self, *args, **kwargs):
-        if self.is_deleted:
-            self.safe_delete()
         super(SafeModel, self).save(*args, **kwargs)

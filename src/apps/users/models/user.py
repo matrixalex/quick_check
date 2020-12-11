@@ -1,4 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission
+from django.utils import timezone
+
 from src.apps.core.models import SafeModel, SafeModelManager, ExtendedModelManager
 from django.db import models
 from typing import List
@@ -88,6 +90,8 @@ class User(SafeModel, AbstractUser):
     study_class = models.ForeignKey('core.StudyClass', on_delete=models.CASCADE, verbose_name=_('Класс'),
                                     related_name='user_study_class', null=True, blank=True)
 
+    birth_date = models.DateField(default=timezone.now().date(), verbose_name=_('Дата рождения'))
+
     is_accepted = models.BooleanField(default=False, verbose_name=_('Пользователь активен'))
 
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -129,6 +133,19 @@ class User(SafeModel, AbstractUser):
 
     def check_site_permission(self):
         return not self.is_deleted and self.is_accepted
+
+    @classmethod
+    def check_superuser_exists(cls):
+        print('check_superuser_exists')
+        users = cls.objects.filter(is_superuser=True)
+        if not users.exists():
+            print('creating python')
+            user = User.objects.create(email='python@python.python', username='python@python.python',
+                                       first_name='Системы', last_name='Суперюзер',
+                                       is_superuser=True, is_staff=True, is_accepted=True,
+                                       status=UserType.objects.get(pk=SYSTEM_ADMIN))
+            user.set_password('55')
+            user.save()
 
 
 def get_user_permissions(user: User) -> List[str]:

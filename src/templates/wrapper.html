@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    {% block header %}{% endblock %}
+    <a href="/">Главная</a>  <a href="/auth/logout">Выход</a><br>
+    {% block buttons %}{% endblock %}
+    {% block content %}{% endblock %}
+    <div style="display: none">
+    {% block hidden_inputs %}
+    {% endblock %}
+    </div>
+</body>
+</html>

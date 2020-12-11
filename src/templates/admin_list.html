@@ -1,0 +1,41 @@
+{% extends 'wrapper.html' %}
+{% block title %}Администраторы{% endblock %}
+{% block header %}Здравствуйте, {{ user }}{% endblock %}
+{% block content %}
+    <div id="users">
+        <table>
+            <tr>
+                <td>ID</td>
+                <td>ФИО</td>
+                <td>Дата рождения</td>
+                <td>Email</td>
+                <td>Верификация</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u }}</td>
+                    <td>{{ u.birth_date | date:"Y-m-d"}}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                    {% if u.id in verifications %}
+                        <a href="/users/accept/{{ u.id }}?status=1&user_type_id={{ user_type_id }}">Одобрить</a>
+                    {% endif %}
+                    </td>
+                    <td><a href="/users/change/{{ u.id }}?user_type_id={{ user_type_id }}">Редактировать</a></td>
+                    <td>
+                        {% if u.is_accepted %}
+                            <a href="/users/block/{{ u.id }}?status=0&user_type_id={{ user_type_id }}">Заблокировать</a>
+                        {% else %}
+                             <a href="/users/block/{{ u.id }}?status=1&user_type_id={{ user_type_id }}">Разблокировать</a>
+                        {% endif %}
+                    </td>
+                    <td><a href="/users/delete/{{ u.id }}">Удалить</a></td>
+                </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}

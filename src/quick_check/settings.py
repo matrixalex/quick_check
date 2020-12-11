@@ -179,3 +179,6 @@ PASSWORD_RESET_ACTIVE = True
 # URL - сайта
 SITE_METHOD = 'http'  # https
 SITE_DOMAIN = '127.0.0.1'
+
+# Требуется ли проверка бд на наличие дефолтных записей, ДО миграций не скидывать в True
+NEED_CHECK_DATABASE = False

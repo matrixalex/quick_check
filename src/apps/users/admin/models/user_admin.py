@@ -20,11 +20,12 @@ class UserChangeForm(forms.ModelForm):
 
 
 class UserAdmin(BaseModelAdmin):
-    list_display = ('last_name', 'first_name', 'middle_name', 'created_at', 'is_deleted')
+    list_display = ('last_name', 'first_name', 'middle_name', 'created_at', 'is_accepted', 'is_deleted')
 
     fieldsets = (
         ('Пользовательские данные', {'fields': ('first_name', 'last_name', 'middle_name', 'status', 'email')}),
-        ('Права доступа', {'fields': ('user_permissions', 'is_staff', 'is_superuser')}),
+        ('Права доступа', {'fields': ('user_permissions', 'is_staff', 'is_superuser', 'is_accepted')}),
+        ('Привязка', {'fields': ('org', 'study_class')}),
         ('Изменение пароля', {'fields': ('password_new', 'password_new_confirm')})
     )
 

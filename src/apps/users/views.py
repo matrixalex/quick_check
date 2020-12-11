@@ -6,6 +6,7 @@ from .models.user_type import UserType, PUPIL
 from ..core.errors import ErrorMessages
 from src.quick_check import settings
 from ..core.message import DataInfoMessage
+from ..core.service import parse_date
 
 
 class LoginView(View):
@@ -21,9 +22,6 @@ class LoginView(View):
             return redirect('/')
         email = request.POST.get('email', '')
         password = request.POST.get('password', '')
-        print({'email': email, 'pass': password})
-        print(user_services.get_user_by_email(email))
-
         data = user_services.authenticate(request, email, password)
         if not data.status:
             return render(request, 'login.html', context={'error': data.message})
@@ -49,11 +47,11 @@ class RegistrationView(View):
         middle_name = request.POST.get('middle_name', '')
         phone_number = request.POST.get('phone_number')
         registration_reason = request.POST.get('registration_reason', '')
+        birth_date = parse_date(request.POST.get('birth_date'))
         user_type = int(request.POST.get('user_type', PUPIL))
-        status, message = user_services.register_user(first_name, last_name, email, phone_number, password,
+        status, message = user_services.register_user(first_name, last_name, email, phone_number, password, birth_date,
                                                       middle_name=middle_name, registration_reason=registration_reason,
                                                       user_profile_type=user_type)
-        print(status, message)
         if not status:
             data['error'] = message
             return render(request, 'registration.html', context=data)

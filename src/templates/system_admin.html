@@ -1,0 +1,15 @@
+{% extends 'wrapper.html' %}
+    {% block title %}
+        <div><h5>Здравствуйте, {{ user }}</h5></div><br>
+    {% endblock %}
+    {% block content %}
+        <div>
+            <div>{{ system_admins_verification_count }}  </div><a href="/users/system-admins">Администраторы системы</a>
+        </div><br>
+        <div>
+            <div>{{ admins_verification_count }}  </div><a href="/users/admins">Администраторы</a>
+        </div><br>
+        <div>
+            <a href="/organizations/all">Организации</a>
+        </div>
+    {% endblock %}

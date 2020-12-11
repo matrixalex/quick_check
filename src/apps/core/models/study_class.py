@@ -15,7 +15,7 @@ class StudyClass(SafeModel):
     org = models.ForeignKey('core.Organization', on_delete=models.CASCADE, related_name='study_class_org',
                             verbose_name=_('Организация'))
     teachers = models.ManyToManyField('users.User', related_name='study_class_teachers', validators=[teacher_validator],
-                                      verbose_name=_('Учителя'))
+                                      verbose_name=_('Учителя'), null=True, blank=True)
 
     class Meta:
         db_table = 'study_classes'

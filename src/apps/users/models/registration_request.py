@@ -1,7 +1,6 @@
 from django.db import models
 from src.apps.core.models import SafeModel
 from django.utils.translation import gettext_lazy as _
-from .user_type import UserType
 
 
 class RegistrationStatus(models.IntegerChoices):
@@ -21,7 +20,8 @@ class RegistrationRequest(SafeModel):
 
     registration_reason = models.TextField(default='', verbose_name=_('Причина регистрации'))
 
-    status = models.IntegerField(default=RegistrationStatus.WAITING, verbose_name=_('Статус одобрения'))
+    status = models.IntegerField(default=RegistrationStatus.WAITING, verbose_name=_('Статус одобрения'),
+                                 choices=RegistrationStatus.choices)
 
     class Meta:
         db_table = 'registration_requests'

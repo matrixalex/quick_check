@@ -1,7 +1,12 @@
-from datetime import datetime
+import datetime
+from datetime import datetime, date
+from typing import Optional, Union
+
+from django.db.models import QuerySet
+from django.shortcuts import render
 from django.utils import timezone
 from src.quick_check import settings
-from .models import Document
+from .models import Document, Organization
 import uuid
 import os
 
@@ -12,6 +17,11 @@ def get_time_now() -> datetime:
     :return: datetime
     """
     return timezone.now()
+
+
+def parse_date(date_str: str) -> date:
+    result = datetime.strptime(date_str, '%Y-%m-%d')
+    return result
 
 
 def upload_file(file_object) -> Document:
@@ -25,6 +35,47 @@ def upload_file(file_object) -> Document:
         return document
 
 
+def get_all_orgs() -> QuerySet:
+    """Получить все организации"""
+    return Organization.objects.all()
+
+
+def get_org_by_id(org_id: int) -> Optional[Organization]:
+    """Получить организацию по id"""
+    try:
+        return Organization.objects.get(pk=org_id)
+    except Organization.DoesNotExist:
+        return None
+
+
+def create_org(name: str) -> Organization:
+    """Создание организации"""
+    org = Organization.objects.create(name=name)
+    return org
+
+
+def change_org(org: Union[int, Organization], name: str) -> Organization:
+    """Редактирование организации"""
+    if not isinstance(org, Organization):
+        org = get_org_by_id(org)
+    if org:
+        org.name = name
+        org.save()
+    return org
+
+
+def delete_org(org: Union[int, Organization]) -> None:
+    if not isinstance(org, Organization):
+        org = get_org_by_id(org)
+    if org:
+        org.safe_delete()
+
+
 def get_site_url() -> str:
     """Получение текущего url сайта"""
     return '{}://{}'.format(settings.SITE_METHOD, settings.SITE_DOMAIN)
+
+
+def render_error(request, message):
+    """Рендер страницы ошибки"""
+    return render(request, 'error.html', context={'message': message})

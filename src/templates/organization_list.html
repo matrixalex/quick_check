@@ -1,0 +1,24 @@
+{% extends 'wrapper.html' %}
+{% block title %}Администраторы{% endblock %}
+{% block header %}Здравствуйте, {{ user }}{% endblock %}
+{% block content %}
+    <div id="users">
+        <div><a href="/organizations/create">Добавить</a></div>
+        <table>
+            <tr>
+                <td>ID</td>
+                <td>Наименование</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% for org in orgs %}
+                <tr>
+                    <td>{{ org.id }}</td>
+                    <td>{{ org }}</td>
+                    <td><a href="/organizations/change/{{ org.id }}">Редактировать</a></td>
+                    <td><a href="/organizations/delete/{{ org.id }}">Удалить</a></td>
+                </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}
