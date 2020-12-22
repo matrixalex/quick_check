@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'src.apps.core',
     'src.apps.users',
-    'src.apps.homework'
+    'src.apps.homework',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [

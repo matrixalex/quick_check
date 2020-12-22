@@ -9,13 +9,23 @@ from ..core.message import DataInfoMessage
 from ..core.service import parse_date
 
 
+class AuthView(View):
+    """Лендинг и авторизация\регистрация"""
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/')
+        context = {'user_types': UserType.choices}
+        return render(request, 'index.html', context=context)
+
+
 class LoginView(View):
     """Аторизация пользователя"""
 
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('/')
-        return render(request, 'login.html')
+        return redirect('/auth/')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -32,6 +42,7 @@ class LoginView(View):
 
 class RegistrationView(View):
     """Регистрация пользователя"""
+
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('/')
