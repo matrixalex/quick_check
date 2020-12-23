@@ -10,6 +10,7 @@ from .models import User, RegistrationRequest, UserType
 from django.contrib.auth import authenticate as auth, login
 from src.quick_check import settings
 from .models import user_type
+from .serializers import UserSerializer
 from ..core.errors import ErrorMessages
 from src.apps.core import service as server_service
 from ..core.models import Organization, StudyClass
@@ -193,3 +194,21 @@ def get_user_type(user_type_id: int) -> Optional[UserType]:
 def generate_random_password() -> str:
     """Генерирует случайный пароль"""
     return str(uuid.uuid4())[-8:]
+
+
+def serialize_user(user: User, short: bool = False) -> dict:
+    """
+    Сериализация пользователя.
+
+    Если short=True, возвращает id, ФИО, тип учетной записи и флаг суперюзера
+    """
+    if short:
+        return {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'middle_name': user.middle_name,
+            'is_superuser': user.is_superuser,
+            'user_type': user.status.name if user.status else '',
+            'id': user.id
+        }
+    return UserSerializer(user).data

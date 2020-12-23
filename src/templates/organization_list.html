@@ -1,24 +1,109 @@
-{% extends 'wrapper.html' %}
-{% block title %}Администраторы{% endblock %}
-{% block header %}Здравствуйте, {{ user }}{% endblock %}
+{% extends 'admin_list_wrapper.html' %}
+{% block title %}Организации{% endblock %}
+{% block  header_title %}Список организаций{% endblock %}
 {% block content %}
-    <div id="users">
-        <div><a href="/organizations/create">Добавить</a></div>
-        <table>
-            <tr>
-                <td>ID</td>
-                <td>Наименование</td>
-                <td></td>
-                <td></td>
-            </tr>
-            {% for org in orgs %}
-                <tr>
-                    <td>{{ org.id }}</td>
-                    <td>{{ org }}</td>
-                    <td><a href="/organizations/change/{{ org.id }}">Редактировать</a></td>
-                    <td><a href="/organizations/delete/{{ org.id }}">Удалить</a></td>
-                </tr>
-        {% endfor %}
-        </table>
+    <div class="section-4 start">
+    <div class="div-block-692">
+      <div class="table">
+        <div class="table-header header w-hidden-small w-hidden-tiny w-row">
+          <div class="text-left w-col w-col-5">
+            <div class="table-header caps transp">Наименование</div>
+          </div>
+          <div class="text-left new w-col w-col-4">
+            <div class="table-header caps transp">Администраторы</div>
+          </div>
+          <div class="text-left new statya w-clearfix w-col w-col-3">
+            <a data-w-id="9784728c-8d32-b528-b655-6d1a1cd0b153" href="#" class="add w-button">Добавить</a>
+          </div>
+        </div>
+          {% for org in orgs %}
+              <div class="list-item">
+          <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+            <div class="text-left w-col w-col-5">
+              <div class="text-block-4 bold">{{ org }}</div>
+            </div>
+            <div class="text-left vert w-col w-col-4">
+                {% for u in org.admins %}
+                    <div class="text-block-4 left">{{ u }}</div>
+                {% endfor %}
+            </div>
+            <div class="text-left new statya w-col w-col-3">
+              <div class="div-block-654">
+                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" class="func edit w-button"></a>
+                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" onclick="handle_delete('/organizations/delete', {{ org.id }})" class="func delete w-button"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
     </div>
+  </div>
+{% endblock %}
+{% block forms %}
+    <div style="opacity:0" class="popup edit">
+    <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4f96" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687">
+      <div class="form-block w-form">
+        <h1 class="form-headline">Редактирование организации</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Администраторы организации</h5>
+          <div class="table-2">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-wrapper">
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                    <div class="text-block-4">Усманов Галяэддин Галяэддинович</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+            </div>
+          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
+          <div class="form-submit-wrapper"><input type="submit" value="Сохранить" data-wait="Please wait..." class="form-button w-button"></div>
+        </form>
+      </div>
+      <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4fc7" href="#" class="close-popup form w-button"></a>
+    </div>
+  </div>
+  <div style="opacity:0" class="popup new">
+    <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d0738c" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687">
+      <div class="form-block w-form">
+        <h1 class="form-headline">Добавление организации</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Администраторы организации</h5>
+          <div class="table-2">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-wrapper">
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                    <div class="text-block-4">Усманов Галяэддин Галяэддинович</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+            </div>
+          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required=""><input type="submit" value="Добавить" data-wait="Please wait..." class="form-button w-button">
+        </form>
+        <div class="success-message w-form-done"><img src="https://uploads-ssl.webflow.com/5b28725e3dd6e12319241711/5b28725e3dd6e1262624175d_big-check%402x.png" width="200" alt="">
+          <div class="success-message-text">Thanks you! Someone from our team will contact you in the next 24 hours.</div>
+        </div>
+        <div class="error-message-2 w-form-fail">
+          <div class="error-message-text">Oops! Something went terribly wrong.</div>
+        </div>
+      </div>
+      <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d073b6" href="#" class="close-popup form w-button"></a>
+    </div>
+  </div>
 {% endblock %}

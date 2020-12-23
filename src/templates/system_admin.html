@@ -1,15 +1,41 @@
-{% extends 'wrapper.html' %}
-    {% block title %}
-        <div><h5>Здравствуйте, {{ user }}</h5></div><br>
-    {% endblock %}
-    {% block content %}
-        <div>
-            <div>{{ system_admins_verification_count }}  </div><a href="/users/system-admins">Администраторы системы</a>
-        </div><br>
-        <div>
-            <div>{{ admins_verification_count }}  </div><a href="/users/admins">Администраторы</a>
-        </div><br>
-        <div>
-            <a href="/organizations/all">Организации</a>
-        </div>
-    {% endblock %}
+{% extends 'admin_wrapper.html' %}
+{% load static %}
+{% block title %}Системный администратор{% endblock %}
+{% block content %}
+    <div class="section-4">
+    <div class="div-block-692 center">
+      <div class="dash-cell">
+        <a href="/users/admins" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-201.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список <br>администраторов </h3>
+            <div class="div-block-693">
+              <h5 class="heading-135">{{ admins_verification_count }}</h5>
+              <h4 class="heading-136">Требуют верификации {{ admins_verification_count }} человек</h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a href="/users/system-admins" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-199.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список суперадминистраторов</h3>
+            <div class="div-block-693">
+              <h5 class="heading-135">{{ system_admins_verification_count }}</h5>
+              <h4 class="heading-136">Требуют верификации {{ system_admins_verification_count }} человек</h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a href="/organizations/all" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-200.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список <br>организаций</h3>
+            <div class="div-block-693 error">
+              <h4 class="heading-136"></h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

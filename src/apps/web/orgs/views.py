@@ -1,4 +1,9 @@
 from django.shortcuts import render, redirect
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
+
+from src.apps.core.api import DeleteView
 from src.apps.core.service import create_org, change_org, get_org_by_id, delete_org
 from src.apps.core.models import Organization
 from django.views import View
@@ -39,9 +44,5 @@ class ChangeOrgView(View):
         return redirect('/organizations/all')
 
 
-class DeleteOrgView(View):
-
-    @staticmethod
-    def get(request, org_id):
-        delete_org(org_id)
-        return redirect('/organizations/all')
+class DeleteOrgView(DeleteView):
+    model = Organization

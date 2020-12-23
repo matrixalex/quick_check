@@ -1,12 +1,17 @@
 from django.contrib.auth import logout
+from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import render, redirect
+from rest_framework.views import APIView
+
 from . import service as user_services
 from .models.user_type import UserType, PUPIL
 from ..core.errors import ErrorMessages
 from src.quick_check import settings
 from ..core.message import DataInfoMessage
 from ..core.service import parse_date
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
+from rest_framework.response import Response
 
 
 class AuthView(View):
@@ -19,13 +24,8 @@ class AuthView(View):
         return render(request, 'index.html', context=context)
 
 
-class LoginView(View):
+class LoginView(APIView):
     """Аторизация пользователя"""
-
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('/')
-        return redirect('/auth/')
 
     def post(self, request):
         if request.user.is_authenticated:
@@ -34,23 +34,15 @@ class LoginView(View):
         password = request.POST.get('password', '')
         data = user_services.authenticate(request, email, password)
         if not data.status:
-            return render(request, 'login.html', context={'error': data.message})
-        if data.user.is_superuser:
-            return redirect('/admin')
-        return redirect('/')
+            return Response({'result': {'message': data.message}}, HTTP_400_BAD_REQUEST)
+        data = {'result': user_services.serialize_user(data.user, short=True)}
+        return Response(data, HTTP_200_OK)
 
 
-class RegistrationView(View):
+class RegistrationView(APIView):
     """Регистрация пользователя"""
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('/')
-
-        return render(request, 'registration.html', context={'user_types': UserType.choices})
-
     def post(self, request):
-        data = {'user_types': UserType.choices}
         email = request.POST.get('email')
         password = request.POST.get('password')
         first_name = request.POST.get('first_name')
@@ -64,13 +56,13 @@ class RegistrationView(View):
                                                       middle_name=middle_name, registration_reason=registration_reason,
                                                       user_profile_type=user_type)
         if not status:
-            data['error'] = message
-            return render(request, 'registration.html', context=data)
+            return Response({'result': {'message': message}}, HTTP_400_BAD_REQUEST)
         user_type = UserType.objects.get(pk=user_type)
-        data['message'] = DataInfoMessage.REGISTRATION_SUCCESS.format(
-            user_type, user_type.get_superior_user_type()
-        )
-        return render(request, 'registration.html', context=data)
+        data = {'result': {
+                'message': DataInfoMessage.REGISTRATION_SUCCESS.format(
+                    user_type, user_type.get_superior_user_type())
+                }}
+        return Response(data, HTTP_200_OK)
 
 
 class LogoutView(View):
@@ -78,7 +70,7 @@ class LogoutView(View):
 
     def get(self, request):
         logout(request)
-        return redirect('/auth/login')
+        return redirect('/')
 
 
 class ResetPasswordPageView(View):

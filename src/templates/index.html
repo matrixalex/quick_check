@@ -10,6 +10,7 @@
   <link href={% static "css/normalize.css" %} rel="stylesheet" type="text/css">
   <link href={% static "css/webflow.css" %} rel="stylesheet" type="text/css">
   <link href={% static "css/johns-superb-project-9d032e.webflow.css" %} rel="stylesheet" type="text/css">
+  <script src={% static "js/auth.js"  %} type="text/javascript">
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
   <script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","PT Serif:400,400italic,700,700italic"]  }});</script>
   <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
@@ -54,10 +55,13 @@
       <div class="form-block w-form">
         <h1 class="form-headline">Вход</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2"><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label>
-          <h5 class="heading-131 login">Логин</h5><input type="email" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Пароль</h5><input type="password" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h1 class="error">Текст ошибки</h1><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
-          <div class="form-submit-wrapper"><input type="submit" value="Вход" data-wait="Please wait..." class="form-button w-button"></div>
+          <h5 class="heading-131 login">Email</h5><input type="email" maxlength="256" id="email_login" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Пароль</h5><input type="password" maxlength="256" id="password_login" required="" class="text-field-7 w-input">
+          <h1 class="error" id="login_error_block"></h1>
+          <div class="form-submit-wrapper">
+              <a data-wait="Please wait..." class="form-button w-button" onclick="login()" style="text-align: center">Вход</a>
+              <input type="submit" value="Вход" data-wait="Please wait..." class="form-button w-button" hidden="hidden" style="display: none">
+          </div>
         </form>
       </div>
       <a data-w-id="6707330f-cacb-f653-ef95-1b40d7901231" href="#" class="close-popup form w-button"></a>
@@ -69,24 +73,26 @@
       <div class="form-block w-form">
         <h1 class="form-headline">Регистрация</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2"><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label>
-          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Дата рождения</h5><input type="email" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Логин</h5><input type="email" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Причина регистрации</h5><textarea name="field-7" maxlength="5000" id="field-7" class="text-field-7 login w-input"></textarea>
-          <h5 class="heading-131 login">Роль</h5><select id="field-6" name="field-6" class="select-field w-select">
+          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="first_name" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="last_name" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="middle_name" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Дата рождения</h5><input type="date" maxlength="256" id="birth_date" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Номер телефона</h5><input type="text" maxlength="256" id="phone_number" required="" class="text-field-7 w-input" placeholder="+79993335500">
+          <h5 class="heading-131 login">Email</h5><input type="email" maxlength="256" id="email_registration" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Причина регистрации</h5><textarea name="field-7" maxlength="5000" id="registration_reason" class="text-field-7 login w-input"></textarea>
+          <h5 class="heading-131 login">Роль</h5><select id="user_type" name="field-6" class="select-field w-select">
             {% for user_type, user_type_str in user_types %}
                     <option value="{{ user_type }}">{{ user_type_str }}</option>
                 {% endfor %}
           </select>
-          <h5 class="heading-131 login">Пароль</h5><input type="password" maxlength="256" id="node" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Пароль</h5><input type="password" maxlength="256" id="password_registration" required="" class="text-field-7 w-input">
           <h5 class="heading-131 login">Повторите пароль</h5>
           <div class="div-block-688">
-            <a href="#" class="button-4 w-button"></a><input type="password" class="text-field-8 password w-input" maxlength="256" name="Password" data-name="Password" id="Password" required="">
+            <a href="#" class="button-4 w-button"></a><input type="password" class="text-field-8 password w-input" maxlength="256" name="Password" data-name="Password" id="password_registration_confirm" required="">
           </div>
-          <h1 class="error">Текст ошибки</h1><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
-          <div class="form-submit-wrapper"><input type="submit" value="Регистрация" data-wait="Please wait..." class="form-button w-button"></div>
+          <h1 class="error" id="registration_error_block"></h1>
+            <div class="form-submit-wrapper"><a data-wait="Please wait..." onclick="registration()" class="form-button w-button">Регистрация</a>
+            <input type="submit" hidden></div>
           <div class="div-block-689">
             <h6 class="heading-5 login">У вас уже есть учетная запись?</h6>
             <a href="#" data-w-id="55cca7ba-9538-1f9f-827e-7e55ce586fb2" class="link-block-2 w-inline-block">

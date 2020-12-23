@@ -1,0 +1,41 @@
+{% extends 'admin_wrapper.html' %}
+{% load static %}
+{% block static %}Администатор{% endblock %}
+{% block content %}
+<div class="section-4">
+    <div class="div-block-692 center">
+      <div class="dash-cell">
+        <a href="/users/schoolchilds" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/029-classroom-2.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список учеников </h3>
+            <div class="div-block-693">
+              <h5 class="heading-135">{{ pupils_verification_count }}</h5>
+              <h4 class="heading-136">Требуют верификации {{ pupils_verification_count }} человек</h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a href="/users/teachers" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-197.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список учителей</h3>
+            <div class="div-block-693">
+              <h5 class="heading-135">{{ teachers_verification_count }}</h5>
+              <h4 class="heading-136">Требуют верификации {{ teachers_verification_count }} человек</h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a href="/classes" class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-200.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Список классов</h3>
+            <div class="div-block-693 error">
+              <h4 class="heading-136"></h4>
+            </div>
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

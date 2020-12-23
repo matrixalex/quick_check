@@ -13,7 +13,7 @@ def index(request):
     """
     user = request.user
     if not user.is_authenticated:
-        return redirect('/auth/login')
+        return redirect('/auth/')
     if user.is_superuser:
         return redirect('/admin')
     if user.status.id == SYSTEM_ADMIN:
@@ -60,7 +60,7 @@ def admin_page(request):
     data['pupils_verification_count'] = registration_requests.filter(
         registration_user__status=PUPIL
     ).count()
-    return render(request, 'index.html', context=data)
+    return render(request, 'admin.html', context=data)
 
 
 def teacher_page(request):
