@@ -1,1 +1,1 @@
-from .views import DeleteView
+from .views import BaseDeleteView, BaseCreateOrChangeView

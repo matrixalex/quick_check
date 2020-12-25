@@ -1,6 +1,10 @@
 {% extends 'admin_list_wrapper.html' %}
+{% load static %}
 {% block title %}Организации{% endblock %}
 {% block  header_title %}Список организаций{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src={% static "js/orgs.js" %}></script>
+{% endblock %}
 {% block content %}
     <div class="section-4 start">
     <div class="div-block-692">
@@ -29,7 +33,7 @@
             </div>
             <div class="text-left new statya w-col w-col-3">
               <div class="div-block-654">
-                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" class="func edit w-button"></a>
+                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" onclick="change_org_form_show({{ org.id }}, '{{ org.name }}')" class="func edit w-button"></a>
                 <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" onclick="handle_delete('/organizations/delete', {{ org.id }})" class="func delete w-button"></a>
               </div>
             </div>
@@ -47,25 +51,28 @@
       <div class="form-block w-form">
         <h1 class="form-headline">Редактирование организации</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
-          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="name_change" required="" class="text-field-7 extra-margin w-input">
           <h5 class="heading-131 login">Администраторы организации</h5>
           <div class="table-2">
             <div class="table-header w-hidden-small w-hidden-tiny w-row">
               <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
-                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label"></span>
                 </label></div>
               <div class="text-left-2 w-col w-col-4"></div>
             </div>
             <div class="list-wrapper">
+              {% for u in admins %}
               <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
-                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
-                    <div class="text-block-4">Усманов Галяэддин Галяэддинович</div>
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">{{ u.id }}</span>
+                    <div class="text-block-4">{{ u }}</div>
                   </label></div>
                 <div class="text-left-2 w-col w-col-1"></div>
               </div>
+                {% endfor %}
             </div>
-          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
-          <div class="form-submit-wrapper"><input type="submit" value="Сохранить" data-wait="Please wait..." class="form-button w-button"></div>
+          </div>
+            <input style="display: none" id="org_id" type="number" value="">
+            <div class="form-submit-wrapper"><a onclick="change_org()" data-wait="Please wait..." class="form-button w-button">Сохранить</a></div>
         </form>
       </div>
       <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4fc7" href="#" class="close-popup form w-button"></a>
@@ -77,31 +84,29 @@
       <div class="form-block w-form">
         <h1 class="form-headline">Добавление организации</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
-          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Наименование организации</h5><input type="text" maxlength="256" id="name_create" required="" class="text-field-7 extra-margin w-input">
           <h5 class="heading-131 login">Администраторы организации</h5>
           <div class="table-2">
             <div class="table-header w-hidden-small w-hidden-tiny w-row">
               <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
-                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label"></span>
                 </label></div>
               <div class="text-left-2 w-col w-col-4"></div>
             </div>
-            <div class="list-wrapper">
+            <div class="list-wrapper" id="admins_create_block">
+                {% for u in admins %}
               <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
-                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
-                    <div class="text-block-4">Усманов Галяэддин Галяэддинович</div>
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2">
+                    <input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2">
+                    <span class="checkbox-label-2 w-form-label">{{ u.id }}</span>
+                    <div class="text-block-4">{{ u }}</div>
                   </label></div>
                 <div class="text-left-2 w-col w-col-1"></div>
               </div>
+                {% endfor %}
             </div>
-          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required=""><input type="submit" value="Добавить" data-wait="Please wait..." class="form-button w-button">
+          </div><a data-wait="Please wait..." class="form-button w-button" onclick="create_org()">Добавить</a>
         </form>
-        <div class="success-message w-form-done"><img src="https://uploads-ssl.webflow.com/5b28725e3dd6e12319241711/5b28725e3dd6e1262624175d_big-check%402x.png" width="200" alt="">
-          <div class="success-message-text">Thanks you! Someone from our team will contact you in the next 24 hours.</div>
-        </div>
-        <div class="error-message-2 w-form-fail">
-          <div class="error-message-text">Oops! Something went terribly wrong.</div>
-        </div>
       </div>
       <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d073b6" href="#" class="close-popup form w-button"></a>
     </div>

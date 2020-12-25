@@ -11,3 +11,4 @@ class ErrorMessages:
     WRONG_USER_TYPE = _('Некорректный тип учетной записи')
     USER_NOT_ACTIVE = _('Учетная запись не активирована')
     NO_USER_TYPE = _('Не найден тип учетной записи')
+    NO_OBJECT = _('Объект не найден')

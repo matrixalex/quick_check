@@ -1,0 +1,167 @@
+{% extends 'admin_list_wrapper.html' %}
+{% load static %}
+{% block title %}
+{% if user_type_id == user_types.SYSTEM_ADMIN %}Администраторы Системы
+{% elif user_type_id == user_types.ADMIN %}Администраторы
+{% elif user_type_id == user_types.TEACHER %}Учителя
+{% elif user_type_id == user_types.PUPIL %}Ученики
+{% endif %}
+{% endblock %}
+{% block header_title %}
+{% if user_type_id == user_types.SYSTEM_ADMIN %}Администраторы Системы
+{% elif user_type_id == user_types.ADMIN %}Администраторы
+{% elif user_type_id == user_types.TEACHER %}Учителя
+{% elif user_type_id == user_types.PUPIL %}Ученики
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static "js/users.js" %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="section-4 start height">
+    <div class="w-form">
+      <form id="email-form" name="email-form" data-name="Email Form">
+        <div class="div-block-695">
+          <div class="div-block-696">
+            <h4 class="heading-138 summary">Всего: 251 </h4>
+            <h4 class="heading-138 verfication">Требуется верификация: 1 </h4>
+          </div>
+        </div>
+        <div class="div-block-692">
+          <div class="table no-scroll">
+            <div class="table-header header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left w-col w-col-1">
+                <div class="table-header caps transp">Номер</div>
+              </div>
+              <div class="text-left new w-col w-col-3">
+                <div class="table-header caps transp">ФИО</div>
+              </div>
+              <div class="text-left new w-col w-col-2">
+                <div class="table-header caps transp">дата рождения</div>
+              </div>
+              <div class="column-3 w-col w-col-4">
+                <div class="table-header caps transp">Email</div>
+              </div>
+              <div class="column w-clearfix w-col w-col-2">
+                <a data-w-id="02cd8edd-ddb1-8e91-f78a-7c93b5422aee" onclick="user_create_form_show()" href="#" class="add w-button">Добавить</a>
+              </div>
+            </div>
+              {% for u in users %}
+            <div class="list-item user">
+              <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left w-col w-col-1">
+                  <div class="text-block-4 left larger">{{ u.id }}</div>
+                </div>
+                <div class="text-left vert w-col w-col-3">
+                  <div class="text-block-4 left larger">{{ u }}</div>
+                </div>
+                <div class="text-left new w-col w-col-2">
+                  <div class="text-block-4 left larger">{{ u.birth_date | date:"Y-m-d" }}</div>
+                </div>
+                <div class="column-2 w-col w-col-4">
+                  <div class="text-block-4 left larger">{{ u.email }}</div>
+                    {% if u.id in verifications %}
+                  <a data-w-id="4bdf0dc6-28f9-9e5d-0ef9-1579d36316c2" href="#" class="button-14 w-button">Просмотр заявки</a>
+                    {% endif %}
+                </div>
+                <div class="w-col w-col-2">
+                  <div class="div-block-654 right">
+                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" class="func edit w-button"></a>
+                    <a data-w-id="cdbf1e9a-4c19-ebd8-2feb-425ed8906833" href="#" class="func lock w-button"></a>
+                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" class="func delete w-button"></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+              {% endfor %}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+{% block forms %}
+   <div style="opacity:0" class="popup edit" id="user_edit_form">
+    <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4f96" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687">
+      <div class="form-block w-form">
+        <h1 class="form-headline">Редактирование пользователя</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="last_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="first_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="middle_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Дата рождения</h5><input type="email" maxlength="256" id="birth_date_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Логин</h5><input type="email" maxlength="256" id="email_edit" required="" class="text-field-7 w-input">
+          {% if orgs %}
+            <h5 class="heading-131 login">Организация</h5><select id="org_id_edit" name="field-7" class="select-field w-select">
+            {% for org in orgs %}
+                <option value="{{ org.id }}">{{ org }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+          {% if study_classes %}
+            <h5 class="heading-131 login">Класс</h5><select id="study_class_id_edit" name="field-7" class="select-field w-select">
+            {% for study_class in study_classes %}
+                <option value="{{ study_class.id }}">{{ study_class }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+            <div class="form-submit-wrapper"><a data-wait="Please wait..." class="form-button w-button">Сохранить</a></div>
+        </form>
+      </div>
+      <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4fc7" href="#" class="close-popup form w-button"></a>
+    </div>
+  </div>
+  <div style="opacity:0" class="popup new" id="user_add_form">
+    <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d0738c" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687">
+      <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d073b6" href="#" class="close-popup form w-button"></a>
+      <div class="form-block w-form">
+        <h1 class="form-headline">Добавление пользователя</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="last_name_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="first_name_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="middle_name_create" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Дата рождения</h5><input type="date" maxlength="256" id="birth_date_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Email</h5><input type="email" maxlength="256" id="email_create" required="" class="text-field-7 w-input">
+          {% if orgs %}
+            <h5 class="heading-131 login">Организация</h5><select id="org_id_create" name="field-7" class="select-field w-select">
+            {% for org in orgs %}
+                <option value="{{ org.id }}">{{ org }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+          {% if study_classes %}
+            <h5 class="heading-131 login">Класс</h5><select id="study_class_id_edit" name="field-7" class="select-field w-select">
+            {% for study_class in study_classes %}
+                <option value="{{ study_class.id }}">{{ study_class }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+          <div class="form-submit-wrapper">
+              <a data-wait="Please wait..." class="form-button w-button">Добавить</a></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div style="opacity:0" class="popup view-request">
+    <div class="div-block-687">
+      <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af3f2" href="#" class="close-popup form w-button"></a>
+      <div class="form-block w-form">
+        <h1 class="form-headline">Просмотр заявки</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Причина заявки</h5>
+          <h4 class="heading-144">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</h4>
+          <div class="div-block-752">
+            <div class="div-block-636">
+              <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af3fd" href="#" class="button-13 w-button">Отклонить</a>
+              <a href="#" class="button-12 w-button">Одобрить</a>
+            </div>
+          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
+          <div class="form-submit-wrapper"></div>
+        </form>
+      </div>
+    </div>
+    <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af40c" href="#" class="close-popup background w-button"></a>
+  </div>
+{% endblock %}

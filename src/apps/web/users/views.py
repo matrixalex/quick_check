@@ -1,26 +1,28 @@
 from django.shortcuts import render, redirect
 
-from src.apps.core.service import render_error, parse_date, get_all_orgs, get_org_by_id
+from src.apps.core.service import render_error, parse_date, get_all_orgs, get_org_by_id, get_study_class_by_id
 from src.apps.core.errors import ErrorMessages
+from src.apps.core.api import BaseCreateOrChangeView, BaseDeleteView
 from src.apps.users import service
-from src.apps.users.models import User, UserType, RegistrationRequest
+from src.apps.users.models import User, RegistrationRequest
 from src.apps.users.models.registration_request import RegistrationStatus
-from src.apps.users.models.user_type import SYSTEM_ADMIN, ADMIN, TEACHER, PUPIL
+from src.apps.users.models import user_type
+from src.apps.users.models.user_type import PUPIL
 from django.views import View
 
 
 REDIRECT_URLS = {
-    SYSTEM_ADMIN: 'system-admins',
-    ADMIN: 'admins',
-    TEACHER: 'teachers',
-    PUPIL: 'pupils'
+    user_type.SYSTEM_ADMIN: 'system-admins',
+    user_type.ADMIN: 'admins',
+    user_type.TEACHER: 'teachers',
+    user_type.PUPIL: 'pupils'
 }
 
 
 class UserListView(View):
     TEMPLATE_NAME = ''
     USER_TYPE_REQUIRED_ID = None
-    USER_TYPE_FILTER_ID = SYSTEM_ADMIN
+    USER_TYPE_FILTER_ID = user_type.SYSTEM_ADMIN
 
     def get_data(self, request):
         data = {'user': request.user,
@@ -28,7 +30,8 @@ class UserListView(View):
                 'verifications': [reg.registration_user.id for reg in RegistrationRequest.objects.filter(
                     status=RegistrationStatus.WAITING,
                     registration_user__status__id=self.USER_TYPE_FILTER_ID)],
-                'user_type_id': self.USER_TYPE_FILTER_ID
+                'user_type_id': self.USER_TYPE_FILTER_ID,
+                'user_types': user_type
                 }
         return data
 
@@ -36,58 +39,59 @@ class UserListView(View):
         if self.USER_TYPE_REQUIRED_ID and request.user.status.id != self.USER_TYPE_REQUIRED_ID:
             return redirect('/not-allowed')
         data = self.get_data(request)
-        return render(request, self.TEMPLATE_NAME, context=data)
+        data.update(get_extra_context_by_user_type(self.USER_TYPE_FILTER_ID))
+        return render(request, 'users_wrapper.html', context=data)
 
 
-class UserDeleteView(View):
-    USER_TYPE_REQUIRED_ID = None
-
-    def get_redirect_url(self, user_to_delete):
-        try:
-            return REDIRECT_URLS[user_to_delete.status.id]
-        except KeyError:
-            return REDIRECT_URLS[SYSTEM_ADMIN]
-
-    def get(self, request, user_id):
-        user = request.user
-        if user.id == user_id:
-            return redirect('/not-allowed')
-        try:
-            user_to_delete = User.objects.get(pk=user_id)
-            redirect_url = self.get_redirect_url(user_to_delete)
-            user_to_delete.safe_delete()
-            return redirect('/users/{}'.format(redirect_url))
-        except User.DoesNotExist:
-            return render_error(request, ErrorMessages.NO_USER)
+class UsersView(UserListView):
+    def get(self, request):
+        self.USER_TYPE_FILTER_ID = request.GET.get('user_type', user_type.PUPIL)
+        self.USER_TYPE_REQUIRED_ID = user_type.SUPERIOR_USER_TYPES.get(self.USER_TYPE_FILTER_ID, user_type.SYSTEM_ADMIN)
+        return super(UsersView, self).get(request)
 
 
-class SystemAdminsView(UserListView):
-    """Страница системных администраторов"""
-    TEMPLATE_NAME = 'system_admin_list.html'
-    USER_TYPE_REQUIRED_ID = SYSTEM_ADMIN
-    USER_TYPE_FILTER_ID = SYSTEM_ADMIN
+class UserCreateOrChangeView(BaseCreateOrChangeView):
+    model = User
+    _fields = {
+        'id': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'validator': lambda val: int(val) > 0
+        },
+        'first_name': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'required': True
+        },
+        'last_name': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'required': True
+        },
+        'middle_name': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'required': True
+        },
+        'phone_number': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'required': True
+        },
+        'email': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
+            'required': True
+        },
+        'birth_date': {
+            'type': BaseCreateOrChangeView.FieldTypeEnumerate.DATE,
+            'required': True
+        }
+    }
+    def extra_post(self, request):
+        org_id = request.data.get('org_id')
+        if org_id:
+            org = get_org_by_id(org_id)
+            service.set_org(self.obj, org)
 
-
-class AdminsView(UserListView):
-    """Страница администраторов организаций"""
-    TEMPLATE_NAME = 'admin_list.html'
-    USER_TYPE_REQUIRED_ID = SYSTEM_ADMIN
-    USER_TYPE_FILTER_ID = ADMIN
-
-
-class TeachersView(UserListView):
-    """Страница учителей"""
-    TEMPLATE_NAME = 'teacher_list.html'
-    USER_TYPE_REQUIRED_ID = ADMIN
-    USER_TYPE_FILTER_ID = TEACHER
-
-
-class PupilsView(UserListView):
-    """Страница учеников"""
-    TEMPLATE_NAME = 'pupil_list.html'
-    USER_TYPE_REQUIRED_ID = ADMIN
-    USER_TYPE_FILTER_ID = PUPIL
-
+        study_class_id = request.data.get('study_class_id')
+        if study_class_id:
+            study_class = get_study_class_by_id(study_class_id)
+            service.set_study_class(self.obj, study_class)
 
 class UserCreateView(View):
     @staticmethod
@@ -202,8 +206,10 @@ class AcceptRegistrationView(View):
 
 def get_extra_context_by_user_type(user_type_id):
     """Получить дополнительный словарь контекста по типу учетной записи"""
-    if user_type_id == SYSTEM_ADMIN:
-        return {}
-    # TODO Будет дорабатываться по мере разработки
-    else:
+    if user_type_id == user_type.ADMIN:
         return {'orgs': get_all_orgs()}
+    elif user_type_id == user_type.TEACHER:
+        return {}
+    elif user_type_id == user_type.PUPIL:
+        return {}
+    return {}

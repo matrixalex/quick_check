@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from django.shortcuts import render
 from django.utils import timezone
 from src.quick_check import settings
-from .models import Document, Organization
+from .models import Document, Organization, StudyClass
 import uuid
 import os
 
@@ -79,3 +79,12 @@ def get_site_url() -> str:
 def render_error(request, message):
     """Рендер страницы ошибки"""
     return render(request, 'error.html', context={'message': message})
+
+
+def get_study_class_by_id(study_class_id: Union[str, int]) -> Optional[StudyClass]:
+    """Получить класс по id."""
+    try:
+        study_class = StudyClass.objects.get(pk=study_class_id)
+        return study_class
+    except StudyClass.DoesNotExist:
+        return None
