@@ -18,6 +18,7 @@ class Homework(SafeModel):
     homework_criterion = models.ForeignKey('homework.Criterion', on_delete=models.CASCADE,
                                            related_name='homework_criterion',
                                            verbose_name=_('Критерий оценки'))
+
     homework_marktype = models.ForeignKey('homework.MarkType', on_delete=models.CASCADE,
                                           related_name='homework_marktype',
                                           verbose_name=_('Вид оценки'))

@@ -137,8 +137,7 @@ class User(SafeModel, AbstractUser):
     @classmethod
     def check_superuser_exists(cls):
         print('check_superuser_exists')
-        users = cls.objects.filter(is_superuser=True)
-        if not users.exists():
+        if not cls.objects.filter(is_superuser=True).exists():
             print('creating python')
             user = User.objects.create(email='python@python.python', username='python@python.python',
                                        first_name='Системы', last_name='Суперюзер',

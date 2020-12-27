@@ -73,6 +73,7 @@ class UserType(SafeModel):
     @classmethod
     def check_and_create_user_types(cls):
         """Метод проверки существования дефолтных типов учетных записей и их создание при необходимости"""
+        print('check_and_create_user_types')
         user_type_ids = list(DEFAULT_USER_TYPE_CHOICES.keys())
         for id in user_type_ids:
             try:

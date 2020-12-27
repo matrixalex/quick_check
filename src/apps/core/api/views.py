@@ -25,6 +25,7 @@ class BaseCreateOrChangeView(BaseModelView):
             'model': SafeModel subclass - для типа FOREIGN_KEY или MANY_TO_MANY
         }
     """
+
     class FieldTypeEnumerate:
         INT = 0
         STR = 1
@@ -35,6 +36,7 @@ class BaseCreateOrChangeView(BaseModelView):
         DATE = 7
 
     _fields = {}
+    _work_fields = {}
     # Объект создания
     obj = None
     edit = False
@@ -59,7 +61,7 @@ class BaseCreateOrChangeView(BaseModelView):
         return value
 
     def get_fields(self, request):
-        """Получение полей из реквеста."""
+        """Получение полей из реквеста автоматически, для более детальной обработки использовать before_post."""
         fields = {}
         for field_name in self._fields:
             value = request.data.get(field_name)
@@ -105,13 +107,18 @@ class BaseCreateOrChangeView(BaseModelView):
         """Позволяет выполнить дополнительные действия после создания или редактирования."""
         pass
 
+    def before_post(self, request):
+        """Позволяет выполнить дополнительные действия до получения полей и создания\редактировния объекта."""
+        return {}
+
     def post(self, request):
         try:
-            fields = self.get_fields(request)
-            if 'id' in fields:
-                self.obj = self.change_object(fields)
+            self._work_fields = self.before_post(request)
+            self._work_fields.update(self.get_fields(request))
+            if 'id' in self._work_fields:
+                self.obj = self.change_object(self._work_fields)
             else:
-                self.obj = self.create_object(fields)
+                self.obj = self.create_object(self._work_fields)
             self.extra_post(request)
             if self.obj:
                 return Response({'result': {'status': True}}, HTTP_200_OK)

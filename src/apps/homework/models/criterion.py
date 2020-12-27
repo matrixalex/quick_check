@@ -36,3 +36,10 @@ class Criterion(SafeModel):
         elif complete_percent >= self.part2:
             return self.MARK_2
         return self.MARK_1
+
+    @classmethod
+    def check_default_criterion(cls):
+        print('check_default_criterion')
+        if not cls.objects.exists():
+            print('creating default criterion')
+            cls.objects.create(name='Обычная (100 баллов)')

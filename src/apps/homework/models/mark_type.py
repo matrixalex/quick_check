@@ -13,3 +13,10 @@ class MarkType(SafeModel):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def check_default_marktype(cls):
+        print('check_default_marktype')
+        if not cls.objects.exists():
+            print('creating default marktype')
+            cls.objects.create(name='Патибальная')
