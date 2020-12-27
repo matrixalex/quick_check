@@ -4,11 +4,8 @@ from . import views
 
 urlpatterns = [
     path('all', views.UsersView.as_view()),
-    # path('system-admins', views.SystemAdminsView.as_view()),
-    # path('admins', views.AdminsView.as_view()),
-    # path('delete/<int:user_id>', views.UserDeleteView.as_view()),
-    path('create', views.UserCreateView.as_view()),
-    path('change/<int:user_id>', views.UserChangeView.as_view()),
+    path('create-or-change', views.UserCreateOrChangeView.as_view()),
+    path('delete', views.UserDeleteView.as_view()),
     path('block/<int:user_id>', views.BlockUserView.as_view()),
     path('accept/<int:user_id>', views.AcceptRegistrationView.as_view()),
 ]

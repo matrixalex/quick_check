@@ -4,7 +4,13 @@
 <html data-wf-page="5fd36aa3471ebb5b6823ed1f" data-wf-site="5fd238c1f41e417664e2c935">
 <head>
   <meta charset="utf-8">
-  <title>Суперадмин - список суперадминов</title>
+  <title>
+      {% if user_type_id == '1' %}Администраторы системы
+      {% elif user_type_id == '2' %}Администраторы
+      {% elif user_type_id == '3' %}Учителя
+      {% else %}Ученики
+      {% endif %}
+  </title>
   <meta content="Суперадмин - список суперадминов" property="og:title">
   <meta content="Суперадмин - список суперадминов" property="twitter:title">
   <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -13,6 +19,8 @@
   <link href={% static "css/webflow.css" %} rel="stylesheet" type="text/css">
   <link href={% static "css/johns-superb-project-9d032e.webflow.css" %} rel="stylesheet" type="text/css">
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{% static 'js/users.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
   <script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","PT Serif:400,400italic,700,700italic"]  }});</script>
   <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
   <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
@@ -23,7 +31,7 @@
   <div data-collapse="medium" data-animation="default" data-duration="400" role="banner" class="nav-bar w-nav">
     <div class="wrapper navbar-2 w-container">
       <div class="div-block-8">
-        <a href="#" class="nav-logo-2 w-inline-block">
+        <a href="/" class="nav-logo-2 w-inline-block">
           <h4 class="heading">Quick Check</h4>
         </a>
       </div>
@@ -34,19 +42,38 @@
   </div>
   <div class="section-3">
     <div class="div-block-690">
-      <h1 class="heading-132">Список суперадминистраторов</h1>
+      <h1 class="heading-132">
+          {% if user_type_id == '1' %}Администраторы системы
+          {% elif user_type_id == '2' %}Администраторы
+          {% elif user_type_id == '3' %}Учителя
+          {% else %}Ученики
+          {% endif %}
+      </h1>
     </div>
   </div>
   <div class="section-4 start height">
     <div class="w-form">
       <form id="email-form" name="email-form" data-name="Email Form">
-        <div class="div-block-695"><select id="field-6" name="field-6" class="select-field-2 w-select">
+        <div class="div-block-695">
+            {% if orgs %}
+            <select id="field-6" name="field-6" class="select-field-2 w-select">
             <option value="">Выбор организации</option>
-            <option value="First">First Choice</option>
+            {% for org in orgs %}
+                <option value="{{ org.id }}">{{ org }}</option>
+            {% endfor %}
           </select>
+            {% elif study_classes %}
+                <select id="field-6" name="field-6" class="select-field-2 w-select">
+            <option value="">Выбор класса</option>
+            {% for study_class in study_classes %}
+                <option value="{{ study_class.id }}">{{ study_class }}</option>
+            {% endfor %}
+                </select>
+            {% endif %}
+
           <div class="div-block-696">
-            <h4 class="heading-138 summary">Всего: 251 </h4>
-            <h4 class="heading-138 verfication">Требуется верификация: 1 </h4>
+            <h4 class="heading-138 summary">Всего: {{ users_count }} </h4>
+            <h4 class="heading-138 verfication">Требуется верификация: {{ verifications_count }} </h4>
           </div>
         </div>
         <div class="div-block-692">
@@ -82,15 +109,15 @@
                 </div>
                 <div class="column-2 w-col w-col-4">
                   <div class="text-block-4 left larger">{{ u.email }}</div>
-                    {% if u.id in verification_id %}
-                  <a data-w-id="4bdf0dc6-28f9-9e5d-0ef9-1579d36316c2" href="#" class="button-14 w-button">Просмотр заявки</a>
+                    {% if u.id in verifications %}
+                  <a data-w-id="4bdf0dc6-28f9-9e5d-0ef9-1579d36316c2" href="#" onclick="registration_form_accept_show({{ u.id }})" class="button-14 w-button">Просмотр заявки</a>
                     {% endif %}
                 </div>
                 <div class="w-col w-col-2">
                   <div class="div-block-654 right">
-                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" class="func edit w-button"></a>
-                    <a data-w-id="cdbf1e9a-4c19-ebd8-2feb-425ed8906833" href="#" class="func lock w-button"></a>
-                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" class="func delete w-button"></a>
+                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" onclick="edit_user_form_show({{ u.id }}, '{{ u.first_name }}', '{{ u.last_name }}', '{{ u.middle_name }}', '{{ u.email }}', '{{ u.phone_number }}', '{{ u.birth_date | date:"Y-m-d" }}' {% if u.org %},{{ u.org.id }}{% endif %}{% if u.study_class %},{{ u.study_class_id }}{% endif %})" class="func edit w-button"></a>
+                    <a data-w-id="cdbf1e9a-4c19-ebd8-2feb-425ed8906833" {% if not u.is_accepted %}style="background-color: rgba(73, 151, 255, 0.05); border-color: rgb(101, 146, 206);"{% endif %}href="#" onclick="block_user(this, {{ u.id }}, {% if u.is_accepted %}1{% else %}0{% endif %})" class="func lock w-button"></a>
+                    <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" onclick="handle_delete('/users/delete', {{ u.id }})" class="func delete w-button"></a>
                   </div>
                 </div>
               </div>
@@ -101,16 +128,16 @@
       </form>
     </div>
   </div>
-  <div style="opacity:0" class="confirm-delete">
+  <div style="opacity:0" class="confirm-delete" id="delete_block">
     <div class="creation-form-container confirm-delete">
-      <a data-w-id="24652362-2b27-beab-50ec-df40e01ce9f8" href="#" class="button-11 w-button"></a><img src="images/Icon.png" loading="lazy" alt="" class="image-2">
+      <a data-w-id="24652362-2b27-beab-50ec-df40e01ce9f8" href="#" class="button-11 w-button"></a><img src={% static "images/Icon.png" %} loading="lazy" alt="" class="image-2">
       <div class="div-block-694">
         <h2 class="signup-headline">Вы действительно хотите удалить?</h2>
       </div>
       <h1 class="heading-18">данные удалятся безвозвратно</h1>
       <div class="div-block-636">
         <a data-w-id="24652362-2b27-beab-50ec-df40e01ce9fe" href="#" class="button-13 w-button">Отмена</a>
-        <a href="#" class="button-12 w-button">Удалить</a>
+        <a href="#" id="delete_button" class="button-12 w-button">Удалить</a>
       </div>
     </div>
     <a data-w-id="54f01905-38b5-eb00-7c3e-1d4a45be265f" href="#" class="button-11 background w-button"></a>
@@ -121,26 +148,29 @@
       <div class="form-block w-form">
         <h1 class="form-headline">Редактирование пользователя</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
-          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Дата рождения</h5><input type="email" maxlength="256" id="node" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Логин</h5><input type="email" maxlength="256" id="node" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="last_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="first_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="middle_name_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Номер телефона</h5><input type="text" maxlength="256" id="phone_number_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Дата рождения</h5><input type="date" maxlength="256" id="birth_date_edit" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Email</h5><input type="email" maxlength="256" id="email_edit" required="" class="text-field-7 w-input">
           {% if orgs %}
-          <h5 class="heading-131 login">Организация</h5><select id="org_id" name="field-7" class="select-field w-select">
+          <h5 class="heading-131 login">Организация</h5>
+              <select id="org_id_edit" name="field-7" class="select-field w-select">
             {% for org in orgs %}
                 <option value="{{ org.id }}">{{ org }}</option>
             {% endfor %}
           </select>
             {% endif %}
             {% if study_classes %}
-          <h5 class="heading-131 login">Организация</h5><select id="study_class_id_edit" name="field-7" class="select-field w-select">
+          <h5 class="heading-131 login">Класс</h5><select id="study_class_id_edit" name="field-7" class="select-field w-select">
             {% for study_class in study_classes %}
                 <option value="{{ study_class.id }}">{{ study_class }}</option>
             {% endfor %}
           </select>
             {% endif %}
-            <div class="form-submit-wrapper"><input type="submit" value="Сохранить" data-wait="Please wait..." class="form-button w-button"></div>
+            <input type="number" value="{{ user_type_id }}" id="user_type" style="display: none;">
+            <div class="form-submit-wrapper"><a onclick="edit_user()" data-wait="Please wait..." class="form-button w-button">Сохранить</a></div>
         </form>
       </div>
       <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4fc7" href="#" class="close-popup form w-button"></a>
@@ -155,42 +185,45 @@
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
           <h5 class="heading-131 login">Фамилия</h5><input type="text" maxlength="256" id="last_name_create" required="" class="text-field-7 w-input">
           <h5 class="heading-131 login">Имя</h5><input type="text" maxlength="256" id="first_name_create" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="birth_date_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Отчество</h5><input type="text" maxlength="256" id="middle_name_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Номер телефона</h5><input type="text" maxlength="256" id="phone_number_create" required="" class="text-field-7 w-input">
           <h5 class="heading-131 login">Дата рождения</h5><input type="date" maxlength="256" id="birth_date_create" required="" class="text-field-7 w-input">
-          <h5 class="heading-131 login">Логин</h5><input type="email" maxlength="256" id="email_create" required="" class="text-field-7 w-input">
+          <h5 class="heading-131 login">Email</h5><input type="email" maxlength="256" id="email_create" required="" class="text-field-7 w-input">
             {% if orgs %}
-          <h5 class="heading-131 login">Организация</h5><select id="org_id" name="field-7" class="select-field w-select">
+          <h5 class="heading-131 login">Организация</h5><select id="org_id_create" name="field-7" class="select-field w-select">
             {% for org in orgs %}
                 <option value="{{ org.id }}">{{ org }}</option>
             {% endfor %}
           </select>
             {% endif %}
             {% if study_classes %}
-          <h5 class="heading-131 login">Организация</h5><select id="study_class_id_create" name="field-7" class="select-field w-select">
+          <h5 class="heading-131 login">Класс</h5><select id="study_class_id_create" name="field-7" class="select-field w-select">
             {% for study_class in study_classes %}
                 <option value="{{ study_class.id }}">{{ study_class }}</option>
             {% endfor %}
           </select>
             {% endif %}
-          <div class="form-submit-wrapper"><input type="submit" value="Добавить" data-wait="Please wait..." class="form-button w-button"></div>
+            {% if org %}<input type="number" id="org_id" value="{{ org.id }}" style="display: none">{% endif %}
+            <input type="number" value="{{ user_type_id }}" id="user_type" style="display: none;">
+            <div class="form-submit-wrapper"><a onclick="create_user()" data-wait="Please wait..." class="form-button w-button">Добавить</a></div>
         </form>
       </div>
     </div>
   </div>
-  <div style="opacity:0" class="popup view-request">
+  <div style="opacity:0" class="popup view-request" id="registration_request_block">
     <div class="div-block-687">
       <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af3f2" href="#" class="close-popup form w-button"></a>
       <div class="form-block w-form">
         <h1 class="form-headline">Просмотр заявки</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
           <h5 class="heading-131 login">Причина заявки</h5>
-          <h4 class="heading-144">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</h4>
+          <h4 class="heading-144" id="registration_request_text_block"></h4>
           <div class="div-block-752">
             <div class="div-block-636">
-              <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af3fd" href="#" class="button-13 w-button">Отклонить</a>
-              <a href="#" class="button-12 w-button">Одобрить</a>
+              <a data-w-id="ad369e64-21e7-bd00-c6f0-e554c82af3fd" href="#" id="button_reject_registration" class="button-13 w-button">Отклонить</a>
+              <a href="#" id="button_accept_registration" class="button-12 w-button">Одобрить</a>
             </div>
-          </div><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
+          </div>
           <div class="form-submit-wrapper"></div>
         </form>
       </div>

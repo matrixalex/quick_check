@@ -2,6 +2,8 @@ from django.db import models
 from .safe_model import SafeModel
 from django.utils.translation import gettext_lazy as _
 
+from ...users.models import User
+
 
 def teacher_validator(*args, **kwargs):
     print(args, kwargs)
@@ -24,4 +26,12 @@ class StudyClass(SafeModel):
         ordering = ['org']
 
     def __str__(self):
-        return '{}: {}'.format(self.name, self.org)
+        return self.name
+
+    @property
+    def get_teachers(self):
+        return self.teachers.all()
+
+    @property
+    def get_pupils(self):
+        return User.objects.filter(study_class=self)

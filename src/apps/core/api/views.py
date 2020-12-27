@@ -32,7 +32,6 @@ class BaseCreateOrChangeView(BaseModelView):
         FLOAT = 3
         FILE = 4
         FOREIGN_KEY = 5
-        MANY_TO_MANY = 6
         DATE = 7
 
     _fields = {}
@@ -51,9 +50,6 @@ class BaseCreateOrChangeView(BaseModelView):
             return float(value)
         elif field_type == self.FieldTypeEnumerate.FOREIGN_KEY:
             value = field_conf['model'].objects.get(pk=value)
-            return value
-        elif field_type == self.FieldTypeEnumerate.MANY_TO_MANY:
-            value = field_conf['model'].objects.filter(id__in=value)
             return value
         elif field_type == self.FieldTypeEnumerate.FILE:
             value = service.upload_file(value)
@@ -91,7 +87,9 @@ class BaseCreateOrChangeView(BaseModelView):
         try:
             obj = self.model.objects.create(**create_fields)
             return obj
-        except:
+        except Exception as e:
+            print('create object error')
+            print(repr(e))
             return None
 
     def change_object(self, change_fields):

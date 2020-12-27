@@ -68,7 +68,7 @@ def teacher_page(request):
     data = {'user': user}
     if user.status.id != TEACHER:
         return redirect('/not-allowed')
-    return render(request, 'index.html', context=data)
+    return render(request, 'teacher.html', context=data)
 
 
 def pupil_page(request):
@@ -76,4 +76,4 @@ def pupil_page(request):
     data = {'user': user}
     if user.status.id != PUPIL:
         return redirect('/not-allowed')
-    return render(request, 'index.html', context=data)
+    return render(request, 'pupil.html', context=data)

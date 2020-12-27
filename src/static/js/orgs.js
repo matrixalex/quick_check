@@ -43,8 +43,8 @@ function change_org_form_show(id, name){
 
 function change_org(){
     let id = org_id;
-    let name = document.getElementById("name_create").value;
-    let admins_id = get_admins_id("admins_create_block");
+    let name = document.getElementById("name_change").value;
+    let admins_id = get_admins_id("admins_change_block");
     $.ajax({
         url: "/organizations/create-or-change",
         type: "post",

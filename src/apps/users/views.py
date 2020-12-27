@@ -1,5 +1,4 @@
 from django.contrib.auth import logout
-from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import render, redirect
 from rest_framework.views import APIView

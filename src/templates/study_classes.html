@@ -1,0 +1,162 @@
+{% extends 'admin_list_wrapper.html' %}
+{% load static %}
+{% block title %}Классы{% endblock %}
+{% block header_title %}Классы{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/classes.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="section-4 start">
+    <div class="div-block-692 vert">
+      <div class="div-block-695">
+        <div class="div-block-697">
+          <h1 class="heading-138 summary margin-right bold">Средний балл: 4.3</h1>
+          <h1 class="heading-138 summary margin-right">Отличники: 4.3</h1>
+          <h1 class="heading-138 summary margin-right">Ударники: 4.3</h1>
+          <h1 class="heading-138 summary margin-right">Троечники: 4.3</h1>
+        </div>
+      </div>
+      <div class="table">
+        <div class="table-header header w-hidden-small w-hidden-tiny w-row">
+          <div class="text-left w-col w-col-5">
+            <div class="table-header caps transp">наименование</div>
+          </div>
+          <div class="text-left new w-col w-col-4">
+            <div class="table-header caps transp">учителя</div>
+          </div>
+          <div class="text-left new statya w-clearfix w-col w-col-3">
+            <a data-w-id="9784728c-8d32-b528-b655-6d1a1cd0b153" href="#" class="add w-button">Добавить</a>
+          </div>
+        </div>
+          {% for study_class in study_classes %}
+        <div class="list-item">
+          <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+            <div class="text-left w-col w-col-5">
+              <div class="text-block-4 bold">{{ study_class }}</div>
+            </div>
+            <div class="text-left vert w-col w-col-4">
+                {% for teacher in study_class.get_teachers %}
+              <div class="text-block-4 left">{{ teacher }}</div>
+                {% endfor %}
+            </div>
+            <div class="text-left new statya w-col w-col-3">
+              <div class="div-block-654">
+                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aed" href="#" onclick="edit_class_form_show({{ study_class.id }}, '{{ study_class.name }}')" class="func edit w-button"></a>
+                <a data-w-id="8e4a0f5a-5bf8-3863-c9be-d03b9d2c4aee" href="#" onclick="delete_object('/classes/delete', {{ study_class.id }})" class="func delete w-button"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block forms %}
+    <div style="opacity:0" class="popup edit">
+    <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4f96" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687">
+      <a data-w-id="cfb4fa56-8083-748e-8efa-0deeee2c4fc7" href="#" class="close-popup form w-button"></a>
+      <div class="form-block w-form">
+        <h1 class="form-headline">Редактирование класса</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Наименование класса</h5><input type="text" maxlength="256" id="name_edit" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Учителя</h5>
+          <div class="table-2 max-height extra-margin">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2">
+                  <input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label"></span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-items-wrapper" id="teachers_block_edit">
+                {% for teacher in teachers %}
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">{{ teacher.id }}</span>
+                    <div class="text-block-4">{{ teacher }}</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+                {% endfor %}
+            </div>
+          </div>
+          <h5 class="heading-131 login">Ученики</h5>
+          <div class="table-2 max-height">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label"></span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-wrapper" id="pupils_block_edit">
+                {% for pupil in pupils %}
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">{{ pupil.id }}</span>
+                    <div class="text-block-4">{{ pupil }}</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+                {% endfor %}
+            </div>
+          </div><a onclick="edit_study_class()" data-wait="Please wait..." class="form-button w-button">Сохранить</a>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div style="opacity:0" class="popup new">
+    <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d0738c" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687 _2-column">
+      <div class="form-block w-form">
+        <h1 class="form-headline">Добавление класса</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
+          <h5 class="heading-131 login">Наименование класса</h5><input type="text" maxlength="256" id="name_create" required="" class="text-field-7 extra-margin w-input">
+          <h5 class="heading-131 login">Учителя</h5>
+          <div class="table-2 max-height extra-margin">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label">Checkbox 2</span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-items-wrapper" id="teachers_block_create">
+                {% for teacher in teachers %}
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">{{ teacher.id }}</span>
+                    <div class="text-block-4">{{ teacher }}</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+                {% endfor %}
+            </div>
+          </div>
+          <h5 class="heading-131 login">Ученики</h5>
+          <div class="table-2 max-height">
+            <div class="table-header w-hidden-small w-hidden-tiny w-row">
+              <div class="text-left-2 header w-col w-col-8"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox">
+                  <h6 class="heading-137">Выделить всех</h6><span class="checkbox-label-2 w-form-label"></span>
+                </label></div>
+              <div class="text-left-2 w-col w-col-4"></div>
+            </div>
+            <div class="list-wrapper" id="pupils_block_create">
+                {% for pupil in pupils %}
+              <div class="table-header list-item w-hidden-small w-hidden-tiny w-row">
+                <div class="text-left-2 center w-col w-col-11"><label class="w-checkbox checkbox-field-2"><input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" class="w-checkbox-input checkbox-2"><span class="checkbox-label-2 w-form-label">{{ pupil.id }}</span>
+                    <div class="text-block-4">{{ pupil }}</div>
+                  </label></div>
+                <div class="text-left-2 w-col w-col-1"></div>
+              </div>
+                {% endfor %}
+            </div>
+          </div>
+            <a onclick="create_study_class()" data-wait="Please wait..." class="form-button w-button">Добавить</a>
+        </form>
+      </div>
+      <a data-w-id="c8ae47b5-994b-49eb-428c-d2e961d073b6" href="#" class="close-popup form w-button"></a>
+    </div>
+  </div>
+{% endblock %}
+{% block hidden_inputs %}
+<input type="number" id="org_id" value="{{ org.id }}">
+{% endblock %}

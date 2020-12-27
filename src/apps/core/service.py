@@ -88,3 +88,10 @@ def get_study_class_by_id(study_class_id: Union[str, int]) -> Optional[StudyClas
         return study_class
     except StudyClass.DoesNotExist:
         return None
+
+
+def get_study_classes(org: Organization = None) -> QuerySet:
+    """Получить список классов по организации"""
+    if org:
+        return StudyClass.objects.filter(org=org)
+    return StudyClass.objects.all()

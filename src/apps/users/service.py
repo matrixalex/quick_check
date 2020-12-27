@@ -158,6 +158,7 @@ def set_org(user: User, org: Organization):
 def set_study_class(user: User, study_class: StudyClass):
     """Установить класс пользователю"""
     user.study_class = study_class
+    user.org = study_class.org
     user.save()
 
 
