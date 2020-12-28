@@ -31,8 +31,10 @@ def upload_file(file_object) -> Document:
     with open(file_path, 'wb+') as file:
         for chunk in file_object.chunks():
             file.write(chunk)
-        document = Document.objects.create(file=file, file_name=file_object.name)
-        return document
+    try:
+        return Document.objects.create(file=file_path, file_name=file_object.name)
+    except Exception as e:
+        print(repr(e))
 
 
 def get_all_orgs() -> QuerySet:

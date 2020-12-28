@@ -3,19 +3,19 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class QuestionAppeal(SafeModel):
-    parent = models.ForeignKey('homework.QuestionResult', on_delete=models.CASCADE,
-                               related_name='questionappeal_question',
+class HomeworkAppeal(SafeModel):
+    parent = models.ForeignKey('homework.PupilHomework', on_delete=models.CASCADE,
+                               related_name='homeworkappeal_homework',
                                verbose_name=_('Вопрос'))
 
     text = models.TextField(default='', verbose_name=_('Текст аппеляции'))
 
-    questionappeal_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
-                                                related_name='questionappeal_document',
+    homeworkappeal_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
+                                                related_name='homeworkappeal_document',
                                                 verbose_name=_('Документ'))
 
     class Meta:
-        db_table = 'question_appeals'
+        db_table = 'homework_appeals'
         verbose_name_plural = _('Аппеляции')
         verbose_name = _('Аппеляция')
 

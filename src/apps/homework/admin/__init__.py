@@ -1,6 +1,6 @@
 from django.contrib.admin import site
 from ..models import (
-    Criterion, MarkType, Homework, HomeworkResult, PupilHomework, Question, QuestionAppeal, QuestionResult
+    Criterion, MarkType, Homework, HomeworkResult, PupilHomework, Question, HomeworkAppeal, QuestionResult
 )
 
 site.register(Criterion)
@@ -9,5 +9,5 @@ site.register(Homework)
 site.register(HomeworkResult)
 site.register(PupilHomework)
 site.register(Question)
-site.register(QuestionAppeal)
+site.register(HomeworkAppeal)
 site.register(QuestionResult)

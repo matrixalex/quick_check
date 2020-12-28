@@ -94,7 +94,7 @@ def teacher_page(request):
         date_filter &= Q(created_at__gte=parse_date(request.GET.get('created_at__gte')))
     if request.GET.get('created_at_lte'):
         date_filter &= Q(created_at__lte=parse_date(request.GET.get('created_at_lte')))
-    homeworks = homeworks.filter(pupil_homework_exercise__pupil__in=pupils).filter(date_filter)
+    homeworks = homeworks.filter(pupil_homework_exercise__pupil__in=pupils).filter(date_filter).distinct()
 
     data['pupils'] = pupils
     data['homeworks'] = homeworks

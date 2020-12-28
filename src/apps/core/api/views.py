@@ -86,13 +86,8 @@ class BaseCreateOrChangeView(BaseModelView):
         return fields
 
     def create_object(self, create_fields):
-        try:
-            obj = self.model.objects.create(**create_fields)
-            return obj
-        except Exception as e:
-            print('create object error')
-            print(repr(e))
-            return None
+        obj = self.model.objects.create(**create_fields)
+        return obj
 
     def change_object(self, change_fields):
         """Изменение объекта"""
@@ -125,8 +120,12 @@ class BaseCreateOrChangeView(BaseModelView):
             return Response({'result': {'status': False}}, HTTP_400_BAD_REQUEST)
         except FieldException as e:
             return Response({'result': {'message': str(e)}}, HTTP_400_BAD_REQUEST)
-        except models.ObjectDoesNotExist:
-            return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
+        # except models.ObjectDoesNotExist:
+        #     return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     print('core exception')
+        #     print(repr(e))
+        #     return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
 
 
 class BaseDeleteView(BaseModelView):

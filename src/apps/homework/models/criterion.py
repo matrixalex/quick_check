@@ -17,6 +17,8 @@ class Criterion(SafeModel):
     part4 = models.IntegerField(default=70, verbose_name=_(TEXT_FORMAT.format(4)))
     part5 = models.IntegerField(default=85, verbose_name=_(TEXT_FORMAT.format(5)))
 
+    default = models.BooleanField(default=False, editable=False)
+
     class Meta:
         db_table = 'criterion'
         verbose_name_plural = _('Критерии')
@@ -40,6 +42,6 @@ class Criterion(SafeModel):
     @classmethod
     def check_default_criterion(cls):
         print('check_default_criterion')
-        if not cls.objects.exists():
+        if not cls.objects.filter(default=True).exists():
             print('creating default criterion')
-            cls.objects.create(name='Обычная (100 баллов)')
+            cls.objects.create(name='Обычный (100 баллов)', default=True)

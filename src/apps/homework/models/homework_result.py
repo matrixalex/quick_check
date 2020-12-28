@@ -12,10 +12,15 @@ class HomeworkResult(SafeModel):
 
     mark = models.IntegerField(default=0, verbose_name=_('Оценка'))
 
+    pupil_homework_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
+                                                related_name='pupil_homework_document',
+                                                verbose_name=_('Файл домашней работы'),
+                                                null=True, blank=True)
+
     class Meta:
         db_table = 'homework_results'
         verbose_name_plural = _('Ответы на домашние задания')
         verbose_name = _('Ответ на домашнее задание')
 
     def __str__(self):
-        return 'Ответ на домашнюю работу {} ученика {}'.format(self.homework, self.pupil)
+        return 'Ответ на домашнюю работу {} ученика {}'.format(self.parent, self.pupil)
