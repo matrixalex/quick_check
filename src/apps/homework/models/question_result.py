@@ -4,10 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class QuestionResult(SafeModel):
-    questionresult_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
-                                                related_name='questionresult_document',
-                                                verbose_name=_('Документ'))
-
     pupil_homework = models.ForeignKey('homework.PupilHomework', on_delete=models.CASCADE,
                                        related_name='questionresult_pupil_homework', verbose_name=_('Домашняя работа'))
 

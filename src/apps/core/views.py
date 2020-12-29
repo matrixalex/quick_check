@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from src.apps.core.models import StudyClass
 from src.apps.core.service import parse_date
-from src.apps.homework.models import Homework
+from src.apps.homework.models import Homework, PupilHomework, QuestionResult, Question
 from src.apps.users.models import RegistrationRequest, User
 from src.apps.users.models.registration_request import RegistrationStatus
 from src.apps.users.models.user_type import SYSTEM_ADMIN, ADMIN, TEACHER, PUPIL
@@ -106,4 +106,9 @@ def pupil_page(request):
     data = {'user': user}
     if user.status.id != PUPIL:
         return redirect('/not-allowed')
+    homeworks = PupilHomework.objects.filter(pupil=user).select_related('homework_exercise')
+    for hw in homeworks:
+        hw.correct_count = QuestionResult.objects.filter(pupil_homework=hw, is_correct=True).count()
+        hw.all_count = Question.objects.filter(question_homework=hw.homework_exercise).count()
+    data['homeworks'] = homeworks
     return render(request, 'pupil.html', context=data)

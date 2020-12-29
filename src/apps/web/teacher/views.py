@@ -1,9 +1,11 @@
+from django.db.models import Subquery, OuterRef, Count, Exists
 from django.shortcuts import render
 from django.views import View
 
 from src.apps.core.api import BaseDeleteView, BaseCreateOrChangeView
 
-from src.apps.homework.models import Homework, Question, HomeworkAppeal, PupilHomework, Criterion, MarkType
+from src.apps.homework.models import Homework, Question, HomeworkAppeal, PupilHomework, Criterion, MarkType, \
+    QuestionResult
 from src.apps.homework import service
 
 
@@ -52,13 +54,24 @@ class HomeworkShowView(View):
     def get(request, homework_id):
         data = {'user': request.user}
         homework = Homework.objects.get(pk=homework_id)
-        pupil_homeworks = PupilHomework.objects.filter(homework_exercise=homework).select_related('pupil')
-        appeals = [pup_homework[0] for pup_homework in pupil_homeworks.filter(
-            homeworkappeal_homework__isnull=False
-        ).distinct().values_list(
-            'id'
-        )]
+        pupil_homeworks = PupilHomework.objects.filter(homework_exercise=homework).select_related(
+            'pupil'
+        )
+        for pupil_homework in pupil_homeworks:
+            if HomeworkAppeal.objects.filter(parent=pupil_homework, is_deleted=False).exists():
+                pupil_homework.appeal_id = HomeworkAppeal.objects.filter(
+                    parent=pupil_homework,
+                    is_deleted=False
+                ).first().id
+            else:
+                pupil_homework.appeal_id = None
+            pupil_homework.correct_count = QuestionResult.objects.filter(
+                        pupil_homework=pupil_homework,
+                        is_correct=True
+                    ).count()
+            pupil_homework.correct_count = Question.objects.filter(
+                        question_homework=pupil_homework.homework_exercise
+                    ).count()
         data['homework'] = homework
         data['pupil_homeworks'] = pupil_homeworks
-        data['appeals'] = appeals
-        return render(request, 'homework.html', context=data)
+        return render(request, 'teacher_homework.html', context=data)

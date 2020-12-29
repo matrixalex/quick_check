@@ -19,7 +19,12 @@ class PupilHomework(SafeModel):
 
     homework_exercise = models.ForeignKey('homework.Homework', on_delete=models.CASCADE,
                                           related_name='pupil_homework_exercise',
-                                          verbose_name=_('Файл домашней работы'))
+                                          verbose_name=_('Домашняя работа'))
+
+    pupilhomework_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
+                                               related_name='pupilhomework_document',
+                                               verbose_name=_('Файл домашней работы'),
+                                               blank=True, null=True)
 
     mark = models.IntegerField(default=None, verbose_name=_('Оценка за домашнее задание'),
                                null=True, blank=True)
