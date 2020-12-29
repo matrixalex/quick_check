@@ -120,12 +120,12 @@ class BaseCreateOrChangeView(BaseModelView):
             return Response({'result': {'status': False}}, HTTP_400_BAD_REQUEST)
         except FieldException as e:
             return Response({'result': {'message': str(e)}}, HTTP_400_BAD_REQUEST)
-        # except models.ObjectDoesNotExist:
-        #     return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
-        # except Exception as e:
-        #     print('core exception')
-        #     print(repr(e))
-        #     return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
+        except models.ObjectDoesNotExist:
+            return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print('core exception')
+            print(repr(e))
+            return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
 
 
 class BaseDeleteView(BaseModelView):
