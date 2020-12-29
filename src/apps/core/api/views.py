@@ -117,7 +117,7 @@ class BaseCreateOrChangeView(BaseModelView):
             self.extra_post(request)
             if self.obj:
                 return Response({'result': {'status': True}}, HTTP_200_OK)
-            return Response({'result': {'status': False}}, HTTP_400_BAD_REQUEST)
+            return Response({'result': {'message': 'Объект не был создан или изменен'}}, HTTP_400_BAD_REQUEST)
         except FieldException as e:
             return Response({'result': {'message': str(e)}}, HTTP_400_BAD_REQUEST)
         except models.ObjectDoesNotExist:
