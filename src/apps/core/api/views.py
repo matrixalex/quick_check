@@ -107,25 +107,25 @@ class BaseCreateOrChangeView(BaseModelView):
         return {}
 
     def post(self, request):
-        try:
-            self._work_fields = self.before_post(request)
-            self._work_fields.update(self.get_fields(request))
-            if 'id' in self._work_fields:
-                self.obj = self.change_object(self._work_fields)
-            else:
-                self.obj = self.create_object(self._work_fields)
-            self.extra_post(request)
-            if self.obj:
-                return Response({'result': {'status': True}}, HTTP_200_OK)
-            return Response({'result': {'message': 'Объект не был создан или изменен'}}, HTTP_400_BAD_REQUEST)
-        except FieldException as e:
-            return Response({'result': {'message': str(e)}}, HTTP_400_BAD_REQUEST)
-        except models.ObjectDoesNotExist:
-            return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print('core exception')
-            print(repr(e))
-            return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
+        #try:
+        self._work_fields = self.before_post(request)
+        self._work_fields.update(self.get_fields(request))
+        if 'id' in self._work_fields:
+            self.obj = self.change_object(self._work_fields)
+        else:
+            self.obj = self.create_object(self._work_fields)
+        self.extra_post(request)
+        if self.obj:
+            return Response({'result': {'status': True}}, HTTP_200_OK)
+        return Response({'result': {'message': 'Объект не был создан или изменен'}}, HTTP_400_BAD_REQUEST)
+        # except FieldException as e:
+        #     return Response({'result': {'message': str(e)}}, HTTP_400_BAD_REQUEST)
+        # except models.ObjectDoesNotExist:
+        #     return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     print('core exception')
+        #     print(repr(e))
+        #     return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
 
 
 class BaseDeleteView(BaseModelView):
