@@ -1,11 +1,14 @@
 from django.db.models import Subquery, OuterRef, Count, Exists
 from django.shortcuts import render
 from django.views import View
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
 
 from src.apps.core.api import BaseDeleteView, BaseCreateOrChangeView
 
 from src.apps.homework.models import Homework, Question, HomeworkAppeal, PupilHomework, Criterion, MarkType, \
-    QuestionResult
+    QuestionResult, AppealResult
 from src.apps.homework import service
 
 
@@ -41,8 +44,8 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
         if questions_data:
             for pupil_id in pupils_id:
                 PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
-            for text, answer in questions_data:
-                Question.objects.create(question_homework=self.obj, text=text, answer=answer)
+            for num, text, answer in questions_data:
+                Question.objects.create(question_homework=self.obj, text=text, answer=answer, num=num)
 
 
 class HomeWorkDeleteView(BaseDeleteView):
@@ -69,9 +72,37 @@ class HomeworkShowView(View):
                         pupil_homework=pupil_homework,
                         is_correct=True
                     ).count()
-            pupil_homework.correct_count = Question.objects.filter(
+            pupil_homework.all_count = Question.objects.filter(
                         question_homework=pupil_homework.homework_exercise
                     ).count()
         data['homework'] = homework
         data['pupil_homeworks'] = pupil_homeworks
         return render(request, 'teacher_homework.html', context=data)
+
+
+class AppealHomeworkView(APIView):
+    @staticmethod
+    def post(request):
+        homework_id = request.data.get('homework_id')
+        text = request.data.get('text')
+        appeal_id = request.data.get('appeal_id')
+        appeal = HomeworkAppeal.objects.get(pk=appeal_id)
+        homework = PupilHomework.objects.get(pk=homework_id)
+        AppealResult.objects.create(parent=appeal, pupil_homework=homework, text=text)
+        appeal.is_deleted = True
+        appeal.save()
+        homework.status = PupilHomework.UPLOADED_HAS_ANSWER
+        homework.save()
+        return Response({'result': {'message': ''}}, HTTP_200_OK)
+
+
+class HomeworkAppealShowView(View):
+    @staticmethod
+    def get(request, appeal_id):
+        user = request.user
+        appeal = HomeworkAppeal.objects.select_related(
+            'parent',
+            'homeworkappeal_document'
+        ).get(pk=appeal_id)
+        data = {'user': user, 'appeal': appeal}
+        return render(request, 'teacher_appeal.html', context=data)

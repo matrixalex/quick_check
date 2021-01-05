@@ -10,9 +10,6 @@ class QuestionResult(SafeModel):
     homework_question = models.ForeignKey('homework.Question', on_delete=models.CASCADE,
                                           related_name='questionresult_homework_question', verbose_name=_('Вопрос'))
 
-    pupil = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='questionresult_pupil',
-                              verbose_name=_('Ученик'))
-
     answer = models.TextField(default='Ответ', verbose_name=_('Ответ'))
 
     is_correct = models.BooleanField(default=False, verbose_name=_('Правильный ответ'))

@@ -20,4 +20,4 @@ class HomeworkAppeal(SafeModel):
         verbose_name = _('Аппеляция')
 
     def __str__(self):
-        return 'Аппеляция {} на {}'
+        return 'Аппеляция {} на {}'.format(self.parent.pupil, self.parent)

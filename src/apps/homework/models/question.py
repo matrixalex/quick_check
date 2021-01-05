@@ -12,6 +12,8 @@ class Question(SafeModel):
                                           related_name='question_homework',
                                           verbose_name=_('Домашнее задание'))
 
+    num = models.PositiveIntegerField(default=1, editable=False)
+
     class Meta:
         db_table = 'questions'
         verbose_name_plural = _('Вопросы')

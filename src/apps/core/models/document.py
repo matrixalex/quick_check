@@ -1,6 +1,7 @@
 from django.db import models
 from .safe_model import SafeModel
 from django.utils.translation import gettext_lazy as _
+from src.quick_check.settings import MEDIA_URL, SITE_METHOD, SITE_DOMAIN, SITE_PORT
 
 
 class Document(SafeModel):
@@ -15,8 +16,8 @@ class Document(SafeModel):
 
     @property
     def file_url(self):
-        print(self.file)
-        return self.file
+        result = str(self.file).replace('\\', '/').split('/')[-1]
+        return '{}://{}:{}{}'.format(SITE_METHOD, SITE_DOMAIN, SITE_PORT, MEDIA_URL + result)
 
     @property
     def display_file_name(self):

@@ -75,7 +75,7 @@ def delete_org(org: Union[int, Organization]) -> None:
 
 def get_site_url() -> str:
     """Получение текущего url сайта"""
-    return '{}://{}'.format(settings.SITE_METHOD, settings.SITE_DOMAIN)
+    return '{}://{}:{}'.format(settings.SITE_METHOD, settings.SITE_DOMAIN, settings.SITE_PORT)
 
 
 def render_error(request, message):

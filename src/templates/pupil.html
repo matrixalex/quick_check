@@ -12,6 +12,7 @@
   <link href={% static "css/normalize.css" %} rel="stylesheet" type="text/css">
   <link href={% static "css/webflow.css" %} rel="stylesheet" type="text/css">
   <link href={% static "css/johns-superb-project-9d032e.webflow.css" %} rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="{% static "js/homework.js" %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
   <script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","PT Serif:400,400italic,700,700italic"]  }});</script>
   <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
@@ -67,7 +68,7 @@
             <div class="list-item user">
               <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
                 <div class="text-left w-clearfix w-col w-col-2">
-                  <a data-w-id="214a794f-1007-7e78-80cb-728292c03d5d" href="#" class="add red w-button">Загрузить</a>
+                  <a data-w-id="214a794f-1007-7e78-80cb-728292c03d5d" href="#" onclick="upload_pupil_homework_form_show({{ homework.id }})" class="add red w-button">Загрузить</a>
                 </div>
                 <div class="text-left vert w-col w-col-4">
                   <h3 class="heading-139">{{ homework.homework_exercise.name }}</h3>
@@ -107,15 +108,51 @@
                 </div>
               </div>
             </div>
+                  {% elif homework.appeal_answer %}
+                        <div class="list-item user">
+              <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
+                  {% if homework.correct_count == homework.all_count %}
+                <div class="text-left w-clearfix w-col w-col-2">
+                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">{{ homework.correct_count }}/{{ homework.all_count }}</a>
+                </div>
+                   {% else %}
+                      <div class="text-left w-col w-col-2">
+                      <a href="#" onclick="load_appeal_result({{ homework.appeal_answer.id }})" style="text-decoration: none;">
+                  <div class="div-block-741 red">
+                    <h5 class="heading-143 red">{{ homework.correct_count }}/{{ homework.all_count }}</h5>
+                  </div>
+                       </a>
+                </div>
+                   {% endif %}
+                <div class="text-left vert w-col w-col-4">
+                  <h3 class="heading-139">{{ homework.homework_exercise.name }}</h3>
+                  <div class="text-block-4 left larger description">{{ homework.homework_exercise.description }}</div>
+                </div>
+                <div class="text-left new w-col w-col-2">
+                  <div class="text-block-4 left larger">{{ homework.created_at | date:"Y.m.d" }}</div>
+                </div>
+                <div class="column-2 vert w-col w-col-2">
+                  <div class="text-block-4 left larger checked">Есть ответ</div>
+                </div>
+                <div class="w-col w-col-2">
+                  <div class="div-block-654 right"><img src={% static "images/Group-115.png" %} loading="lazy" alt="" class="image-3 complete"></div>
+                </div>
+              </div>
+            </div>
                   {% else %}
+                      <a href="/pupil/homework/{{ homework.id }}">
                       <div class="list-item user">
               <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
                   {% if homework.correct_count == homework.all_count %}
                 <div class="text-left w-clearfix w-col w-col-2">
-                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">5/5</a>
+                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">{{ homework.correct_count }}/{{ homework.all_count }}</a>
                 </div>
                    {% else %}
-
+                      <div class="text-left w-col w-col-2">
+                  <div class="div-block-741 red">
+                    <h5 class="heading-143 red">{{ homework.correct_count }}/{{ homework.all_count }}</h5>
+                  </div>
+                </div>
                    {% endif %}
                 <div class="text-left vert w-col w-col-4">
                   <h3 class="heading-139">{{ homework.homework_exercise.name }}</h3>
@@ -132,6 +169,7 @@
                 </div>
               </div>
             </div>
+                      </a>
                   {% endif %}
               {% endfor %}
           </div>
@@ -139,15 +177,15 @@
       </form>
     </div>
   </div>
-  <div style="opacity:0" class="popup answer">
+  <div style="opacity:0" class="popup answer" id="appeal_result_block">
     <a data-w-id="bd25f7f3-e4fd-cad3-a6a8-84f788ef8e98" href="#" class="close-popup background w-button"></a>
     <div class="div-block-687">
-      <a data-w-id="bd25f7f3-e4fd-cad3-a6a8-84f788ef8e9a" href="#" class="close-popup form w-button"></a>
+      <a data-w-id="bd25f7f3-e4fd-cad3-a6a8-84f788ef8e9a" href="#" id="delete_appeal_button" class="close-popup form w-button"></a>
       <div class="form-block w-form">
         <h1 class="form-headline">Ответ на апелляцию</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
           <h5 class="heading-131 login">Текст ответа</h5>
-          <h4 class="heading-144"></h4>
+          <h4 class="heading-144" id="appeal_result_text"></h4>
           <div class="form-submit-wrapper"></div>
         </form>
       </div>
@@ -159,13 +197,15 @@
       <a data-w-id="b28775bb-cf6f-f305-6819-7e677773860b" href="#" class="close-popup form w-button"></a>
       <div class="form-block w-form">
         <h1 class="form-headline">Загрузка задания.</h1><br>
-        <h1 class="form-headline">Функционал в разработке</h1>
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
-          <h5 class="heading-131 login">Загрузка файла</h5><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label><input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
-          <div class="form-submit-wrapper"><input disabled="disabled" type="submit" value="Отправить" data-wait="Please wait..." class="form-button w-button"></div>
+          <h5 class="heading-131 login">Загрузка файла</h5>
+            <div class="form-submit-wrapper">
+                <a onclick="upload_pupil_homework()" data-wait="Please wait..." class="form-button w-button">Отправить</a>
+            </div>
           <div class="upload-wrapper">
             <h5 class="heading-142">Загрузить файл</h5>
-            <div class="html-embed-4 avatar wrapped w-embed"><input disabled="disabled" type="file" class="bx--file-input" id="file-uploader" data-file-uploader="" data-target="[data-file-container]" multiple=""></div>
+            <div class="html-embed-4 avatar wrapped w-embed">
+                <input type="file" class="bx--file-input" id="file" data-file-uploader="" data-target="[data-file-container]" multiple=""></div>
           </div>
         </form>
       </div>

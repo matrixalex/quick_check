@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from src.apps.core.models import StudyClass
 from src.apps.core.service import parse_date
-from src.apps.homework.models import Homework, PupilHomework, QuestionResult, Question
+from src.apps.homework.models import Homework, PupilHomework, QuestionResult, Question, AppealResult
 from src.apps.users.models import RegistrationRequest, User
 from src.apps.users.models.registration_request import RegistrationStatus
 from src.apps.users.models.user_type import SYSTEM_ADMIN, ADMIN, TEACHER, PUPIL
@@ -110,5 +110,9 @@ def pupil_page(request):
     for hw in homeworks:
         hw.correct_count = QuestionResult.objects.filter(pupil_homework=hw, is_correct=True).count()
         hw.all_count = Question.objects.filter(question_homework=hw.homework_exercise).count()
+        hw.appeal_answer = (
+            AppealResult.objects.filter(parent__parent=hw, is_deleted=False).first() if
+            AppealResult.objects.filter(parent__parent=hw, is_deleted=False).exists() else None
+        )
     data['homeworks'] = homeworks
     return render(request, 'pupil.html', context=data)
