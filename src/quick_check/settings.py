@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from src.apps.neuro.model_training import get_model
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -184,3 +185,7 @@ SITE_DOMAIN = '127.0.0.1'
 SITE_PORT = '8000'
 # Требуется ли проверка бд на наличие дефолтных записей, ДО миграций не скидывать в True
 NEED_CHECK_DATABASE = False
+
+DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/working'
+ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
+
