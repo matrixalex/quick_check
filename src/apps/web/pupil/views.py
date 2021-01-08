@@ -1,8 +1,12 @@
+import traceback
+
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
+
+from src.apps.core.errors import ErrorMessages
 from src.apps.core.service import upload_file
 from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult
 from src.apps.homework.service import get_homework_result
@@ -11,8 +15,8 @@ from src.apps.users.models import user_type
 
 class UploadHomeworkView(APIView):
     """Загрузка домашней работы учеником."""
-    @staticmethod
-    def post(request):
+
+    def process_request(self, request):
         homework_id = request.data.get('homework_id')
         homework = PupilHomework.objects.get(pk=homework_id)
         file = request.data.get('file')
@@ -34,6 +38,14 @@ class UploadHomeworkView(APIView):
         homework.status = PupilHomework.UPLOADED_HAS_ANSWER
         homework.mark = mark
         homework.save()
+
+    def post(self, request):
+        try:
+            self.process_request(request)
+        except Exception as e:
+            print('core exception')
+            traceback.print_exc(e)
+            return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
         return Response({'result': {'message': ''}}, HTTP_200_OK)
 
 

@@ -72,6 +72,10 @@ function upload_pupil_homework(){
         processData: false,
         contentType: false,
         data: data,
+        beforeSend: function (){
+            document.getElementById("btn_upload_homework").disabled = "disabled";
+            document.getElementById("btn_upload_homework").innerText = "Подождите"
+        },
         success: function (data){
             window.location.reload();
         },
