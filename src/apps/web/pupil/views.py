@@ -18,7 +18,7 @@ class UploadHomeworkView(APIView):
         file = request.data.get('file')
         document = upload_file(file)
         questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework)
-        answers = get_homework_result(questions, file)
+        answers = get_homework_result(questions, str(document.file))
         count = 0
         for question, answer, check in answers:
             QuestionResult.objects.create(

@@ -45,10 +45,10 @@ def crop_text_to_lines(text, blanks):
     lines = []
     for i, blank in enumerate(blanks):
         x2 = blank
-        #print("x1=", x1, ", x2=", x2, ", Diff= ", x2-x1)
-        line = text[:, x1:x2]
-        lines.append((line,x1,x2-x1))
-        x1 = blank
+        if x1 < x2:
+            line = text[:, x1:x2]
+            lines.append((line, x1, x2))
+            x1 = blank
     return lines
     
 
@@ -160,7 +160,7 @@ def analyse_image(N_of_questions, filename):
     plt.imshow(img)
     img = cv2.resize(img, (1200, 1600))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = np.transpose(img)
+    # img = np.transpose(img)
     images = []
     i = 1
     for im in lineSegmentation(img):
@@ -168,12 +168,12 @@ def analyse_image(N_of_questions, filename):
         to_plot = []
         for word in wordSegmentation(im[0]):
             to_plot.append((word[0], 0, 0))
-            images.append((word[0], im[1], word[1], im[2], word[2], i))
+            images.append((word[0], word[1], im[1], word[2], im[2], i))
             j += 1
             if j == 3:
                 # display_lines(to_plot)
                 break
-            i += 1
         if i == N_of_questions + 1:
             break
+        i += 1
     return images
