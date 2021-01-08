@@ -52,5 +52,5 @@ def make_answer(num_of_questions, filename):
         counter -= 1
 
     plt.imshow(draw2)
-    plt.savefig(filename)
+    plt.savefig(filename, bbox_inches='tight')
     return dict(sorted(answer.items(), key=lambda item: item[0]))
