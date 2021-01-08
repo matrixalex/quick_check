@@ -1,16 +1,9 @@
-import pandas as pd
-import numpy as np
 import torch
-import cv2
-from sklearn.model_selection import train_test_split
-from torch.autograd import Variable
 import torch.nn as nn
 from torch.nn.functional import sigmoid
-from src.apps.neuro.segmentation import normalize
 
 # df = pd.read_csv('../input/russian-handwritten-letters/all_letters_info.csv')
 # df = df[(df["background"] == 0) & (df["label"] < 7)]
-from src.quick_check.settings import DEFAULT_TRAIN_DATA_PATH
 
 
 class mach1(nn.Module):
@@ -45,7 +38,7 @@ def get_model(data_path: str = None):
     global ml_model
     if ml_model:
         return ml_model
-    data_path = data_path or DEFAULT_TRAIN_DATA_PATH
+    assert data_path
     result = mach1()
     result.load_state_dict(torch.load(data_path))
     result.eval()
