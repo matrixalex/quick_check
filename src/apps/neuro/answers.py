@@ -30,13 +30,18 @@ def make_answer(num_of_questions, filename):
     for seg in blocks:
         # try:
             print('seg {}'.format(seg[5]))
+            print('cat {}:{} {}:{}:{}'.format(seg[2], seg[4], seg[1], seg[3], -1 if seg[1] > seg[3] else 1))
             img = image[seg[2]:seg[4], seg[1]:seg[3]:-1 if seg[1] > seg[3] else 1, :]
-            img = normalize(img)
-            img = cv2.resize(img, (28,28))
-            img = np.rollaxis(img, axis=2, start=0)
-            img = torch.tensor([img]).float()
-            draw1 = cv2.rectangle(image, (seg[1], seg[2]), (seg[3], seg[4]), (255, 0, 0), 3)
-            answer.append(model(img).tolist()[0])
+            check = np.array(img).size
+            if check:
+                img = normalize(img)
+                img = cv2.resize(img, (28, 28))
+                img = np.rollaxis(img, axis=2, start=0)
+                img = torch.tensor([img]).float()
+                # draw1 = cv2.rectangle(image, (seg[1], seg[2]), (seg[3], seg[4]), (255, 0, 0), 3)
+                answer.append(model(img).tolist()[0])
+            else:
+                print('empty seg')
         # except:
         #     print('failed to parse segment {}'.format([seg[1:]]))
     res = torch.tensor(answer)
