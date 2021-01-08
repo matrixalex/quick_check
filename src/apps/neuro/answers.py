@@ -2,10 +2,9 @@ import cv2
 import numpy as np
 import torch
 
+from src.apps.neuro.model_training import get_model
 from src.apps.neuro.segmentation import analyse_image, normalize
 from matplotlib import pyplot as plt
-
-from src.quick_check.settings import ML_MODEL
 
 decoder = {
     0: "a",
@@ -18,7 +17,7 @@ decoder = {
     7: "з"
 }
 
-model = ML_MODEL
+model = get_model()
 
 
 def make_answer(num_of_questions, filename):
@@ -31,7 +30,6 @@ def make_answer(num_of_questions, filename):
     for seg in blocks:
         # try:
             print('seg {}'.format(seg[5]))
-            print('image cat: {}:{}, {}:{}'.format(seg[2], seg[4], seg[1], seg[3]))
             img = image[seg[2]:seg[4], seg[1]:seg[3]:-1 if seg[1] > seg[3] else 1, :]
             img = normalize(img)
             img = cv2.resize(img, (28,28))

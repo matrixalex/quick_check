@@ -10,6 +10,7 @@ from src.apps.neuro.segmentation import normalize
 
 # df = pd.read_csv('../input/russian-handwritten-letters/all_letters_info.csv')
 # df = df[(df["background"] == 0) & (df["label"] < 7)]
+from src.quick_check.settings import DEFAULT_TRAIN_DATA_PATH
 
 
 class mach1(nn.Module):
@@ -44,7 +45,7 @@ def get_model(data_path: str = None):
     global ml_model
     if ml_model:
         return ml_model
-    assert data_path
+    data_path = data_path or DEFAULT_TRAIN_DATA_PATH
     result = mach1()
     result.load_state_dict(torch.load(data_path))
     result.eval()

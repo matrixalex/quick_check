@@ -187,5 +187,5 @@ SITE_PORT = '8000'
 NEED_CHECK_DATABASE = False
 
 DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/working'
-ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
+# ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
 
