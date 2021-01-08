@@ -188,3 +188,4 @@ NEED_CHECK_DATABASE = False
 
 DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/working'
 ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
+print('ML_MODEL INITIALIZED WITH PARAMETERS COUNT {}'.format(len(ML_MODEL.parameters())))
