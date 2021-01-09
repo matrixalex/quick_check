@@ -14,6 +14,40 @@ class BaseModelView(APIView):
     model = None
 
 
+DEFAULT_SUCCESS_API_RESULT = {
+    'result': {'status': True}
+}
+
+SUCCESS_STATUSES = (
+    HTTP_200_OK
+)
+
+
+class BaseAPIResult:
+    def __init__(self, data, status, err_msg: str = None):
+        self.data = data
+        self.status = status
+        self.err_msg = err_msg
+        self.success = True if status in SUCCESS_STATUSES else False
+
+    def get_err_msg_data(self):
+        return {'result': {'message': self.err_msg}}
+
+
+class BaseAPIView(APIView):
+    def process_request(self, request):
+        return BaseAPIResult(DEFAULT_SUCCESS_API_RESULT, HTTP_200_OK)
+
+    def post(self, request):
+        try:
+            result = self.process_request(request)
+            if not result.success:
+                return Response(result.get_err_msg_data(), request.status)
+            return Response(result.data, result.status)
+        except:
+            return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
+
+
 class BaseCreateOrChangeView(BaseModelView):
     """
     Базовый класс создания сущности
