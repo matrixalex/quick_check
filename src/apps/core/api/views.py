@@ -24,7 +24,7 @@ SUCCESS_STATUSES = (
 
 
 class BaseAPIResult:
-    def __init__(self, data, status, err_msg: str = None):
+    def __init__(self, data, status, err_msg=None):
         self.data = data
         self.status = status
         self.err_msg = err_msg
@@ -35,7 +35,7 @@ class BaseAPIResult:
 
 
 class BaseAPIView(APIView):
-    def process_request(self, request):
+    def process_request(self, request) -> BaseAPIResult:
         return BaseAPIResult(DEFAULT_SUCCESS_API_RESULT, HTTP_200_OK)
 
     def post(self, request):
