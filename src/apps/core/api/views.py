@@ -1,5 +1,3 @@
-import traceback
-
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
@@ -160,7 +158,7 @@ class BaseCreateOrChangeView(BaseModelView):
             return Response({'result': {'message': ErrorMessages.NO_OBJECT}}, HTTP_400_BAD_REQUEST)
         except Exception as e:
             print('core exception')
-            traceback.print_exc(e)
+            print(e)
             return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
 
 
