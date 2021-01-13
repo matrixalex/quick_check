@@ -13,9 +13,9 @@ class mach1(nn.Module):
         self.fc0 = nn.ReLU()
         self.conv1 = nn.Conv2d(28, 14, 3)
         self.pool1 = nn.MaxPool2d(2)
-        self.fc1 = nn.Linear(14*12*12, 136)
-        self.fc2 = nn.Linear(136, 68)
-        self.fc3 = nn.Linear(68, 7)
+        self.fc1 = nn.Linear(14*12*12,136)
+        self.fc2 = nn.Linear(136,101)
+        self.fc3 = nn.Linear(101,41)
         self.fc4 = nn.LogSoftmax(dim=1)
 
     def forward(self, x):
@@ -23,7 +23,7 @@ class mach1(nn.Module):
         x = self.fc0(x)
         x = self.conv1(x)
         x = self.pool1(x)
-        x = x.view(-1, 14*12*12)
+        x = x.view(-1,14*12*12)
         x = sigmoid(self.fc1(x))
         x = sigmoid(self.fc2(x))
         x = sigmoid(self.fc3(x))

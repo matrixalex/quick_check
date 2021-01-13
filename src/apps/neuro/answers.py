@@ -7,15 +7,17 @@ from src.apps.neuro.segmentation import analyse_image, normalize
 from matplotlib import pyplot as plt
 
 decoder = {
-    0: "a",
-    1: "б",
-    2: "в",
-    3: "г",
-    4: "д",
-    5: "е",
-    6: "ж",
-    7: "з"
-}
+    0: " ", 1: "1", 2: "2", 3: "3", 4: "4",
+    5: "5", 6: "6", 7: "7", 8: "8", 9: "9",
+    10: "а", 11: "б", 12: "в", 13: "г",
+    14: "д", 15: "е", 16: "ж", 17: "з",
+    18: "и", 19: "к", 20: "л", 21: "м",
+    22: "н", 23: "о", 24: "п", 25: "р",
+    26: "с", 27: "т", 28: "у", 29: "ф",
+    30: "х", 31: "ц", 32: "ч", 33: "ш",
+    34: "щ", 35: "ь", 36: "ы", 37: "ъ",
+    38: "э", 39: "ю", 40: "я"
+ }
 
 model = get_model()
 
@@ -23,7 +25,7 @@ model = get_model()
 def make_answer(num_of_questions, filename):
     image = cv2.imread(filename)
     image = cv2.resize(image, (1200, 1600))
-    blocks = analyse_image(10, filename)
+    blocks = analyse_image(num_of_questions, filename)
     print('have blocks')
     i = 0
     answer = []

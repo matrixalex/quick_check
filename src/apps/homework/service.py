@@ -32,7 +32,7 @@ def get_question_results(file):
 def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, bool]]:
     """Получение ответов от машинки (пока заглушка)"""
     print('questions count {}'.format(questions.count()))
-    answers = make_answer(questions.count(), file)
+    answers = make_answer(questions.count() * 2, file)
     has_answer_questions = []
     result = []
     print('answers')

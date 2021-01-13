@@ -186,6 +186,6 @@ SITE_PORT = '8000'
 # Требуется ли проверка бд на наличие дефолтных записей, ДО миграций не скидывать в True
 NEED_CHECK_DATABASE = False
 
-DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/working'
+DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/model.d'
 ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
 print('ML_MODEL INITIALIZED WITH PARAMETERS COUNT {}'.format(len(list(ML_MODEL.parameters()))))
