@@ -152,24 +152,22 @@ def wordSegmentation(image, show=False, smoothness=45, kernelSize=19, sigma=9, t
 
 
 def analyse_image(N_of_questions, filename):
-    img = cv2.imread(filename)
+    img = plt.imread(filename)
     plt.imshow(img)
     img = cv2.resize(img, (1200, 1600))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # img = np.transpose(img)
-    images = []
-    i = 1
-    for im in lineSegmentation(img):
-        j = 0
-        to_plot = []
-        for word in wordSegmentation(im[0]):
-            to_plot.append((word[0], 0, 0))
-            images.append((word[0], word[1], im[1], word[2], im[2], i))
-            j += 1
-            if j == 3:
-                # display_lines(to_plot)
-                break
-        if i == N_of_questions + 1:
+    lines = []
+    i=0
+    for im in lineSegmentation(img.transpose()):
+        lines.append(im)
+        if i == N_of_questions:
             break
-        i += 1
-    return images
+        i+=1
+    words = []
+    i = 1
+    for line in lines:
+        if line[0].shape[1]>50:
+            for im in wordSegmentation(line[0]):
+                words.append((im[0],im[1],line[1],im[2],line[2], i))
+            i += 1
+    return words

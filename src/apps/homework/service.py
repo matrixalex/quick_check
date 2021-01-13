@@ -1,8 +1,8 @@
-from typing import List, NamedTuple, Tuple
+from typing import List, Tuple
 
 import openpyxl
 from django.db.models import QuerySet
-
+import traceback
 from src.apps.homework.models import Question
 from src.apps.neuro.answers import make_answer
 
@@ -37,15 +37,15 @@ def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, 
     result = []
     print('answers')
     print(answers)
-    for num, ans in answers.items():
+    for num, ans in enumerate(answers):
         try:
-            question = questions.get(num=num)
+            question = questions.get(num=num + 1)
             check = question.answer == ans
             result.append((question, ans.lower(), check))
             has_answer_questions.append(question)
         except Exception as e:
             print('get_homework_result error')
-            print(e)
+            traceback.print_exc(e)
 
     # Вопросы, на которые не было дано ответа
     for question in questions:
