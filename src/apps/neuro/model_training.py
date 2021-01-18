@@ -1,9 +1,26 @@
+import numpy as np
 import torch
-import torch.nn as nn
-from torch.nn.functional import sigmoid
 
-# df = pd.read_csv('../input/russian-handwritten-letters/all_letters_info.csv')
-# df = df[(df["background"] == 0) & (df["label"] < 7)]
+import torch.nn as nn
+
+
+def normalize(image):
+    if len(image.shape)==2:
+        m = np.mean(image)
+        sd = np.std(image)
+        if sd!=0:
+            return (image-m)/sd
+        else:
+            return (image-m)
+    elif len(image.shape)==3:
+        m = np.mean(image)
+        sd = np.std(image)
+        if sd!=0:
+            return (image-m)/sd
+        else:
+            return (image-m)
+    else:
+        return np.nan
 
 
 class mach1(nn.Module):
@@ -11,24 +28,72 @@ class mach1(nn.Module):
         super(mach1, self).__init__()
         self.conv0 = nn.Conv2d(3, 96, 11, stride=4)
         self.pool0 = nn.MaxPool2d(3, stride=2)
-        self.conv1 = nn.Conv2d(96,256,5,padding=2)
+        self.conv1 = nn.Conv2d(96, 256, 5, padding=2)
         self.pool1 = nn.MaxPool2d(3, stride=2, padding=1)
-        self.conv2 = nn.Conv2d(256,384,3,padding=1)
-        self.conv3 = nn.Conv2d(384,384,3,padding=1)
+        self.conv2 = nn.Conv2d(256, 384, 3, padding=1)
+        self.conv3 = nn.Conv2d(384, 384, 3, padding=1)
         self.pool2 = nn.MaxPool2d(3, stride=2)
-        self.fc0 = nn.Linear(384*2*2, 16)
+        self.fc0 = nn.Linear(384 * 2 * 2, 42)
         self.fc1 = nn.LogSoftmax(dim=1)
+
     def forward(self, x):
         x = self.conv0(x)
+        # print(x.shape)
         x = self.pool0(x)
+        # print(x.shape)
         x = self.conv1(x)
+        # print(x.shape)
         x = self.pool1(x)
+        # print(x.shape)
         x = self.conv2(x)
+        # print(x.shape)
         x = self.conv3(x)
+        # print(x.shape)
         x = self.pool2(x)
-        x = x.view(-1,384*2*2)
+        # print(x.shape)
+        x = x.view(-1, 384 * 2 * 2)
         x = self.fc0(x)
         return self.fc1(x)
+
+
+class mach2(nn.Module):
+    def __init__(self):
+        super(mach2, self).__init__()
+        self.conv0 = nn.Conv2d(3, 96, 11, stride=4)
+        self.pool0 = nn.MaxPool2d(3, stride=2)
+        self.conv1 = nn.Conv2d(96, 256, 5, padding=2)
+        self.pool1 = nn.MaxPool2d(3, stride=2, padding=1)
+        self.conv2 = nn.Conv2d(256, 384, 3, padding=1)
+        self.conv3 = nn.Conv2d(384, 384, 3, padding=1)
+        self.pool2 = nn.MaxPool2d(3, stride=2)
+        self.fc0 = nn.Linear(384 * 2 * 2, 42*42)
+        self.fc1 = nn.LogSoftmax(dim=1)
+
+    def forward(self, x):
+        # print(x.shape)
+        x = self.conv0(x)
+        # print(x.shape)
+        x = self.pool0(x)
+        # print(x.shape)
+        x = self.conv1(x)
+        # print(x.shape)
+        x = self.pool1(x)
+        # print(x.shape)
+        x = self.conv2(x)
+        # print(x.shape)
+        x = self.conv3(x)
+        # print(x.shape)
+        x = self.pool2(x)
+        # print(x.shape)
+        x = x.view(-1, 384 * 2 * 2)
+        x = self.fc0(x)
+        return self.fc1(x)
+
+
+
+model1 = mach1()
+model2 = mach1()
+model3 = mach2()
 
 
 ml_model = None

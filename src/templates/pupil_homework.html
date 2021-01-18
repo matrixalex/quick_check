@@ -103,14 +103,20 @@
                 <h3 class="heading-139">{{ question_result.homework_question.text }}</h3>
               </div>
               <div class="_100">
+                  {% if not question_result.is_correct %}
                 <div class="answer-wrapper">
                   <h5 class="heading-131 login no-margin">Ответ:</h5>
                   <h3 class="heading-139 wrong">{{ question_result.answer }}</h3>
                 </div>
-                  {% if not question_result.is_correct %}
+
                 <div>
                   <h5 class="heading-131 login no-margin">Верный ответ:</h5>
                   <h3 class="heading-139">{{ question_result.homework_question.answer }}</h3>
+                </div>
+                  {% else %}
+                      <div class="answer-wrapper">
+                  <h5 class="heading-131 login no-margin">Ответ:</h5>
+                  <h3 class="heading-139 correct">{{ question_result.homework_question.answer }}</h3>
                 </div>
                   {% endif %}
               </div>

@@ -40,12 +40,12 @@ class UploadHomeworkView(APIView):
         homework.save()
 
     def post(self, request):
-        try:
-            self.process_request(request)
-        except Exception as e:
-            print('core exception')
-            traceback.print_exc(e)
-            return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
+        # try:
+        self.process_request(request)
+        #except Exception as e:
+        #    print('core exception')
+        #    traceback.print_exc(e)
+        #    return Response({'result': {'message': ErrorMessages.UNHANDLED}}, HTTP_400_BAD_REQUEST)
         return Response({'result': {'message': ''}}, HTTP_200_OK)
 
 

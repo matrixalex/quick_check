@@ -7,6 +7,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import warnings
 from scipy.signal import argrelmin
+from src.apps.neuro.model_training import mach1
+from torch import load, Tensor, argmax
 warnings.simplefilter('ignore')
 sns.set(rc={'figure.figsize' : (22, 10)})
 sns.set_style("darkgrid", {'axes.grid' : True})
@@ -151,8 +153,10 @@ def wordSegmentation(image, show=False, smoothness=45, kernelSize=19, sigma=9, t
     return res_lines
 
 
-def analyse_image(N_of_questions, filename):
+
+def analyse_image(N_of_questions, filename, model, dictpath):
     img = plt.imread(filename)
+    image = img.copy()
     plt.imshow(img)
     img = cv2.resize(img, (1200, 1600))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -160,14 +164,23 @@ def analyse_image(N_of_questions, filename):
     i=0
     for im in lineSegmentation(img.transpose()):
         lines.append(im)
-        if i == N_of_questions:
-            break
-        i+=1
     words = []
     i = 1
+    model.load_state_dict(load(dictpath))
+    model.eval()
     for line in lines:
+        line_arr = []
         if line[0].shape[1]>50:
             for im in wordSegmentation(line[0]):
-                words.append((im[0],im[1],line[1],im[2],line[2], i))
+                processed_image = Tensor([
+                    np.rollaxis(
+                        cv2.resize(image[line[1]:line[2],im[1]:im[2],:], (100,100)),2,0)
+                ]).detach()
+                res = model(processed_image)
+                line_arr.append((res, im[1], line[1], im[2], line[2], i))
             i += 1
+        words.append(line_arr)
     return words
+
+
+model = mach1()

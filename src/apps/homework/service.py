@@ -31,19 +31,24 @@ def get_question_results(file):
 def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, bool]]:
     """Получение ответов от машинки (пока заглушка)"""
     print('questions count {}'.format(questions.count()))
-    answers = make_answer(questions.count() * 2, file)
-    has_answer_questions = []
-    result = []
+    answers = make_answer(questions.count(), file)
     print('answers')
     print(answers)
-    for num, ans in enumerate(answers):
+    has_answer_questions = []
+    result = []
+    for num in range(1, max(answers.keys())):
         try:
-            question = questions.get(num=num + 1)
-            check = question.answer == ans
-            result.append((question, ans.lower(), check))
+            ans = (''.join(answers.get(num, []))).lower()
+            print('question {}, ans {}'.format(num, ans))
+            question = questions.get(num=num)
+            correct_answer = question.answer.lower()
+            if ans and (ans in correct_answer or correct_answer in ans):
+                ans = question.answer
+            check = question.answer.lower() == ans
+            result.append((question, ans, check))
             has_answer_questions.append(question)
         except Exception as e:
-            print('get_homework_result error')
+            print('get_homework_result error, number {}'.format(num))
             print(e)
 
     # Вопросы, на которые не было дано ответа
