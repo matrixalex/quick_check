@@ -90,6 +90,9 @@ class User(SafeModel, AbstractUser):
     study_class = models.ForeignKey('core.StudyClass', on_delete=models.CASCADE, verbose_name=_('Класс'),
                                     related_name='user_study_class', null=True, blank=True)
 
+    neuro_data = models.ForeignKey('core.Document', on_delete=models.CASCADE, related_name='user_neuro_data',
+                                   null=True, blank=True, editable=False)
+    
     birth_date = models.DateField(default=timezone.now().date(), verbose_name=_('Дата рождения'))
 
     is_accepted = models.BooleanField(default=False, verbose_name=_('Пользователь активен'))

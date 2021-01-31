@@ -186,6 +186,18 @@ SITE_PORT = '8000'
 # Требуется ли проверка бд на наличие дефолтных записей, ДО миграций не скидывать в True
 NEED_CHECK_DATABASE = False
 
+
+CELERY_APPS = [
+    'src.apps.celery.tasks'
+]
+
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = '6379'
+BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+
+
 DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/model2_350_epochs.d'
 ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
-print('ML_MODEL INITIALIZED WITH PARAMETERS COUNT {}'.format(len(list(ML_MODEL.parameters()))))
+# print('ML_MODEL INITIALIZED WITH PARAMETERS COUNT {}'.format(len(list(ML_MODEL.parameters()))))
