@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 
 from src.apps.core.errors import ErrorMessages
 from src.apps.core.service import upload_file
-from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult
+from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult, \
+    SegmentationData
 from src.apps.homework.service import get_homework_result
 from src.apps.users.models import user_type
 
@@ -22,9 +23,9 @@ class UploadHomeworkView(APIView):
         file = request.data.get('file')
         document = upload_file(file)
         questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework)
-        answers = get_homework_result(questions, str(document.file))
+        homework_result = get_homework_result(questions, str(document.file))
         count = 0
-        for question, answer, check in answers:
+        for question, answer, check in homework_result[0]:
             QuestionResult.objects.create(
                 pupil_homework=homework,
                 homework_question=question,
@@ -38,7 +39,15 @@ class UploadHomeworkView(APIView):
         homework.status = PupilHomework.UPLOADED_HAS_ANSWER
         homework.mark = mark
         homework.save()
-
+        for segment_data in homework_result[1]:
+            SegmentationData.objects.create(
+                x_start=segment_data[0],
+                y_start=segment_data[1],
+                x_end=segment_data[2],
+                y_end=segment_data[3],
+                answer=segment_data[4],
+                pupil_homework=homework
+            )
     def post(self, request):
         # try:
         self.process_request(request)

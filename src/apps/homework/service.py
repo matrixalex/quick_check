@@ -1,8 +1,5 @@
-from typing import List, Tuple
-
 import openpyxl
 from django.db.models import QuerySet
-from src.apps.homework.models import Question
 from src.apps.neuro.answers import make_answer
 
 
@@ -28,7 +25,7 @@ def get_question_results(file):
     return []
 
 
-def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, bool]]:
+def get_homework_result(questions: QuerySet, file):
     """Получение ответов от машинки (пока заглушка)"""
     print('questions count {}'.format(questions.count()))
     answers = make_answer(questions.count(), file)
@@ -36,9 +33,9 @@ def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, 
     print(answers)
     has_answer_questions = []
     result = []
-    for num in range(1, max(answers.keys())):
+    for num in range(1, max(answers.answers.keys())):
         try:
-            ans = (''.join(answers.get(num, []))).lower()
+            ans = (''.join(answers.answers.get(num, []))).lower()
             print('question {}, ans {}'.format(num, ans))
             question = questions.get(num=num)
             correct_answer = question.answer.lower()
@@ -55,4 +52,4 @@ def get_homework_result(questions: QuerySet, file) -> List[Tuple[Question, str, 
     for question in questions:
         if question not in has_answer_questions:
             result.append((question, '', False))
-    return result
+    return result, answers.data

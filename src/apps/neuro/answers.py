@@ -8,6 +8,13 @@ from matplotlib import pyplot as plt
 
 from src.quick_check.settings import DEFAULT_TRAIN_DATA_PATH
 
+
+class NeuroResult:
+    def __init__(self):
+        self.answers = {}
+        self.data = []
+
+
 decoder = {
     0: " ",
     1: "а", 2: "б", 3: "в", 4: "г",
@@ -26,23 +33,26 @@ model = get_model()
 
 
 def make_answer(num_of_questions, filename, dictpath=DEFAULT_TRAIN_DATA_PATH):
+    answer = NeuroResult()
     model = get_model(dictpath)
-    answer = {}
     image = plt.imread(filename)
     image = cv2.resize(image, (1200, 1600))
     draw1 = image.copy()
     lines = analyse_image(num_of_questions,filename, model, dictpath)
     line_num = -1
     for line in lines:
-        answer[line_num] = []
+        answer.answers[line_num] = []
         for word in line:
             draw1 = cv2.rectangle(draw1, (word[1],word[2]),(word[3],word[4]),(255,0,0),3)
+            x, y, x_end, y_end = word[1], word[2], word[3], word[4]
             word = cv2.resize(image[word[2]:word[4],word[1]:word[3],:], (100, 100))
             word = np.rollaxis(word, axis=2, start=0)
             word = torch.Tensor([normalize(word)])
             word = int(torch.argmax(model(word)))
             if word > 0:
-                answer[line_num].append(decoder[int(word)])
+                char = decoder[int(word)]
+                answer.answers[line_num].append(char)
+                answer.data.append((x, y, x_end, y_end, char))
         line_num += 1
     plt.imshow(draw1)
     plt.savefig(filename, bbox_inches='tight')
