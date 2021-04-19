@@ -1,0 +1,80 @@
+{% extends 'admin_wrapper.html' %}
+{% load static %}
+{% block title %}Шаблоны подчерков{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src={% static 'js/templates.js' %}></script>
+{% endblock %}
+{% block content %}
+<div class="section-4">
+    <div class="div-block-692 center">
+      <div class="dash-cell">
+        <a class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/029-classroom-2.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Шаблон цифр</h3>
+            {% if not numeric_flag %}
+            <div class="custom_button_div">
+                <h4 class="heading-136">Отсутствует</h4>
+                <button class="custom_button" onclick="location.href = '{{ numeric_url }}';">Скачать</button>
+                <button class="custom_button" onclick="handle_upload_template(0)">Загрузить</button>
+            </div>
+              {% else %}
+            <div class="custom_button_div">
+              <h4 class="heading-136" style="color: #36af47">Есть</h4>
+            </div>
+              {% endif %}
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-199.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Шаблон кириллицы</h3>
+            {% if not cyrillic_flag %}
+            <div class="custom_button_div">
+                <h4 class="heading-136">Отсутствует</h4>
+                <button class="custom_button" onclick="location.href = '{{ cyrillic_url }}';">Скачать</button>
+                <button class="custom_button" onclick="handle_upload_template(2)">Загрузить</button>
+            </div>
+              {% else %}
+            <div class="custom_button_div">
+              <h4 class="heading-136" style="color: #36af47">Есть</h4>
+            </div>
+              {% endif %}
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+      <div class="dash-cell">
+        <a class="white-box link-box paper-box w-inline-block">
+          <div class="box-padding paper-padding"><img src={% static "images/Group-197.png" %} alt="" class="doc-image">
+            <h3 class="doc-heading">Шаблон латиницы</h3>
+              {% if not latin_flag %}
+            <div class="custom_button_div">
+                <h4 class="heading-136">Отсутствует</h4>
+                <button class="custom_button" onclick="location.href = '{{ latin_url }}';">Скачать</button>
+                <button class="custom_button" onclick="handle_upload_template(1)">Загрузить</button>
+            </div>
+              {% else %}
+            <div class="custom_button_div">
+              <h4 class="heading-136" style="color: #36af47">Есть</h4>
+            </div>
+              {% endif %}
+          </div><img src="https://uploads-ssl.webflow.com/5e0da3e06de9383b6e24fa13/5e0da3e06de938936524fa5d_paper.svg" alt="" class="paper">
+        </a>
+      </div>
+    </div>
+  </div>
+  <div style="opacity:0" class="popup login" id="upload_template_form">
+    <a data-w-id="6707330f-cacb-f653-ef95-1b40d790121a" href="#" class="close-popup background w-button"></a>
+    <div class="div-block-687 password-reset">
+      <div class="form-block w-form">
+        <h1 class="form-headline">Загрузка шаблона</h1>
+        <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2"><label for="Name" class="w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny">Name</label>
+          <h5 class="heading-131 login">Образец шаблона</h5><input type="file" maxlength="256" id="file" required="" class="text-field-7 w-input">
+          <input type="number" class="text-field-3 hdie w-input" maxlength="256" name="field-5" data-name="Field 5" id="field-5" required="">
+            <div class="form-submit-wrapper"><a style="text-align: center" id="btn_upload_template" data-wait="Please wait..." onclick="upload_pupil_template()" class="form-button w-button">Загрузить</a></div>
+        </form>
+      </div>
+      <a data-w-id="6707330f-cacb-f653-ef95-1b40d7901231" href="#" onclick="close_upload_form()" class="close-popup form w-button"></a>
+    </div>
+  </div>
+{% endblock %}

@@ -96,7 +96,8 @@ class User(SafeModel, AbstractUser):
     birth_date = models.DateField(default=timezone.now().date(), verbose_name=_('Дата рождения'))
 
     is_accepted = models.BooleanField(default=False, verbose_name=_('Пользователь активен'))
-
+    is_any_template_uploaded = models.BooleanField(default=False, verbose_name=_('Наличие загруженных шаблонов'))
+    
     REQUIRED_FIELDS = ['first_name', 'last_name']
     USERNAME_FIELD = 'email'
 

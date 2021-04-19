@@ -106,7 +106,7 @@ def pupil_page(request):
     data = {'user': user}
     if user.status.id != PUPIL:
         return redirect('/not-allowed')
-    homeworks = PupilHomework.objects.filter(pupil=user).select_related('homework_exercise')
+    homeworks = PupilHomework.objects.filter(pupil=user, is_hidden=False).select_related('homework_exercise')
     for hw in homeworks:
         hw.correct_count = QuestionResult.objects.filter(pupil_homework=hw, is_correct=True).count()
         hw.all_count = Question.objects.filter(question_homework=hw.homework_exercise).count()

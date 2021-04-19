@@ -1,15 +1,11 @@
-import traceback
-
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
+from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
-
-from src.apps.core.errors import ErrorMessages
-from src.apps.core.service import upload_file
+from src.apps.core.service import upload_file, get_site_url
 from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult, \
-    SegmentationData
+    SegmentationData, FontTemplate
 from src.apps.homework.service import get_homework_result
 from src.apps.users.models import user_type
 
@@ -113,3 +109,39 @@ class AppealResultView(APIView):
         appeal_result.is_deleted = True
         appeal_result.save()
         return Response({'result': {'message': ''}}, HTTP_200_OK)
+
+
+class TemplateView(View):
+    @staticmethod
+    def get(request):
+        user = request.user
+        templates = FontTemplate.objects.filter(hidden_homework__pupil=user)
+        numeric_flag = templates.filter(template_type=FontTemplate.NUMERIC).exists()
+        cyrillic_flag = templates.filter(template_type=FontTemplate.CYRILLIC).exists()
+        latin_flag = templates.filter(template_type=FontTemplate.LATIN).exists()
+        numeric_url = get_site_url() + FontTemplate.TEMPLATE_PATHS[FontTemplate.NUMERIC]
+        cyrillic_url = get_site_url() + FontTemplate.TEMPLATE_PATHS[FontTemplate.CYRILLIC]
+        latin_url = get_site_url() + FontTemplate.TEMPLATE_PATHS[FontTemplate.LATIN]
+        data = {
+            'user': user,
+            'numeric_flag': numeric_flag,
+            'cyrillic_flag': cyrillic_flag,
+            'latin_flag': latin_flag,
+            'numeric_url': numeric_url,
+            'cyrillic_url': cyrillic_url,
+            'latin_url': latin_url,
+        }
+        return render(request, 'templates.html', context=data)
+
+
+class TemplateUploadView(APIView):
+    def post(self, request):
+        template_type = int(request.data.get('template_type'))
+        file = request.data.get('file')
+        doc = upload_file(file)
+        homework = PupilHomework.objects.create(pupil=request.user, pupilhomework_document=doc, is_hidden=True)
+        FontTemplate.objects.create(template_type=template_type, hidden_homework=homework)
+        user = request.user
+        user.is_any_template_uploaded = True
+        user.save()
+        return Response(data={'success': True}, status=HTTP_200_OK)

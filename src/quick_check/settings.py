@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'src.apps.core.middleware.csrf_disable_middleware.CsrfDisable',
     'src.apps.core.middleware.user_check_middleware.UserCheckMiddleware',
+    'src.apps.core.middleware.template_upload_check.TemplateUploadCheckMiddleware'
 ]
 
 ROOT_URLCONF = 'src.quick_check.urls'

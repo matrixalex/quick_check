@@ -19,7 +19,7 @@ class PupilHomework(SafeModel):
 
     homework_exercise = models.ForeignKey('homework.Homework', on_delete=models.CASCADE,
                                           related_name='pupil_homework_exercise',
-                                          verbose_name=_('Домашняя работа'))
+                                          verbose_name=_('Домашняя работа'), null=True, blank=True)
 
     pupilhomework_document = models.ForeignKey('core.Document', on_delete=models.CASCADE,
                                                related_name='pupilhomework_document',
@@ -30,6 +30,7 @@ class PupilHomework(SafeModel):
                                null=True, blank=True)
 
     status = models.IntegerField(default=WAIT, choices=STATUS_CHOICES, verbose_name=_('Статус'))
+    is_hidden = models.BooleanField(default=False, editable=False)
 
     class Meta:
         db_table = 'pupil_homeworks'

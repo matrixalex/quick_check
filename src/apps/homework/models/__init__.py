@@ -7,3 +7,4 @@ from .question_result import QuestionResult
 from .appeal import HomeworkAppeal
 from .appeal_result import AppealResult
 from .segmentation_data import SegmentationData
+from .font_template import FontTemplate
