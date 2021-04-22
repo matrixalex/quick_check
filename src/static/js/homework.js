@@ -18,6 +18,8 @@ function upload_homework(){
     data.append("pupils_id", pupils_id);
     data.append("name", document.getElementById("name_create").value);
     data.append("description", document.getElementById("description_create").value);
+    data.append("criterion_id", document.getElementById("criterion_id").value);
+    console.log(data);
     $.ajax({
         url: "/teacher/homework/create-or-change",
         type: "post",

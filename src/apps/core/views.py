@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from src.apps.core.models import StudyClass
 from src.apps.core.service import parse_date
-from src.apps.homework.models import Homework, PupilHomework, QuestionResult, Question, AppealResult
+from src.apps.homework.models import Homework, PupilHomework, QuestionResult, Question, AppealResult, Criterion
 from src.apps.users.models import RegistrationRequest, User
 from src.apps.users.models.registration_request import RegistrationStatus
 from src.apps.users.models.user_type import SYSTEM_ADMIN, ADMIN, TEACHER, PUPIL
@@ -83,7 +83,6 @@ def teacher_page(request):
     study_classes = StudyClass.objects.filter(teachers__in=[user])
     data['study_classes'] = study_classes
     pupils = User.objects.filter(org=user.org, status=PUPIL, study_class__in=study_classes)
-    print(pupils)
     homeworks = Homework.objects.filter(homework_teacher=user)
     if study_class_id:
         pupils = pupils.filter(study_class_id=study_class_id)
@@ -98,6 +97,7 @@ def teacher_page(request):
 
     data['pupils'] = pupils
     data['homeworks'] = homeworks
+    data['criterions'] = Criterion.objects.all()
     return render(request, 'teacher.html', context=data)
 
 

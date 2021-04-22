@@ -118,13 +118,25 @@
               <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
                   {% if homework.correct_count == homework.all_count %}
                 <div class="text-left w-clearfix w-col w-col-2">
-                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">{{ homework.correct_count }}/{{ homework.all_count }}</a>
+                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">
+                      {% if homework.homework_exercise.homework_criterion.criterion_type == homework.homework_exercise.homework_criterion.KEY_TYPE %}
+                      {{ homework.correct_count }}/{{ homework.all_count }}
+                      {% else %}
+                      {{ homework.mistake_count }}
+                      {% endif %}
+                  </a>
                 </div>
                    {% else %}
                       <div class="text-left w-col w-col-2">
                       <a href="#" onclick="load_appeal_result({{ homework.appeal_answer.id }})" style="text-decoration: none;">
                   <div class="div-block-741 red">
-                    <h5 class="heading-143 red">{{ homework.correct_count }}/{{ homework.all_count }}</h5>
+                    <h5 class="heading-143 red">
+                      {% if homework.homework_exercise.homework_criterion.criterion_type == homework.homework_exercise.homework_criterion.KEY_TYPE %}
+                      {{ homework.correct_count }}/{{ homework.all_count }}
+                      {% else %}
+                      {{ homework.mistake_count }}
+                      {% endif %}
+                    </h5>
                   </div>
                        </a>
                 </div>
@@ -150,12 +162,24 @@
               <div class="table-header list-item user w-hidden-small w-hidden-tiny w-row">
                   {% if homework.correct_count == homework.all_count %}
                 <div class="text-left w-clearfix w-col w-col-2">
-                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="#" class="add _132 w-button">{{ homework.correct_count }}/{{ homework.all_count }}</a>
+                  <a data-w-id="a5cd8904-bc41-55d8-2342-c2a35525090b" href="/pupil/homework/{{ homework.id }}" class="add _132 w-button">
+                      {% if homework.homework_exercise.homework_criterion.criterion_type == homework.homework_exercise.homework_criterion.KEY_TYPE %}
+                      {{ homework.correct_count }}/{{ homework.all_count }}
+                      {% else %}
+                      {{ homework.mistake_count }}
+                      {% endif %}
+                  </a>
                 </div>
                    {% else %}
                       <div class="text-left w-col w-col-2">
                   <div class="div-block-741 red">
-                    <h5 class="heading-143 red">{{ homework.correct_count }}/{{ homework.all_count }}</h5>
+                    <h5 class="heading-143 red">
+                      {% if homework.homework_exercise.homework_criterion.criterion_type == homework.homework_exercise.homework_criterion.KEY_TYPE %}
+                      {{ homework.correct_count }}/{{ homework.all_count }}
+                      {% else %}
+                      {{ homework.mistake_count }}
+                      {% endif %}
+                    </h5>
                   </div>
                 </div>
                    {% endif %}

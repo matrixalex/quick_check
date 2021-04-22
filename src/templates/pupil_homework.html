@@ -56,11 +56,17 @@
             </div>
             <div class="div-block-745">
               <h5 class="heading-131 login">Ошибки</h5>
-              <h5 class="heading-145">{{ bad_answers_count }}</h5>
+              <h5 class="heading-145">
+                  {% if homework.homework_exercise.homework_criterion.criterion_type == homework.homework_exercise.homework_criterion.KEY_TYPE %}
+                      {{ bad_answers_count }}
+                      {% else %}
+                      {{ homework.mistake_count }}
+                  {% endif %}
+                  </h5>
             </div>
             <div>
               <h5 class="heading-131 login">Оценка системы</h5>
-              <h5 class="heading-145">{{ correct_answers_count }}/{{ all_count }}</h5>
+              <h5 class="heading-145">{{ homework.mistake_count }}/{{ homework.homework_exercise.homework_criterion.max_mistake_count }}</h5>
             </div>
           </div><img src={% static "images/Group-115.png" %} loading="lazy" alt="" class="image-3 complete">
         </div>

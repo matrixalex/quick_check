@@ -36,15 +36,18 @@ class Criterion(SafeModel):
         verbose_name = _('Критерий')
 
     def __str__(self):
-        return 'Критерий {}'.format(self.name)
+        return self.name
 
     def get_mark(self, complete_percent: int):
         assert 0 <= complete_percent <= 100
         if self.criterion_type == self.TEXT_TYPE:
+            print('its text')
             complete_percent = self.max_mistake_count - complete_percent
             if complete_percent < 0:
                 complete_percent = 0
             complete_percent = complete_percent / self.max_mistake_count
+            print('complete percent {}'.format(complete_percent))
+        complete_percent = complete_percent * 100
         if complete_percent >= self.part5:
             return self.MARK_5
         elif complete_percent >= self.part4:
@@ -60,5 +63,5 @@ class Criterion(SafeModel):
         print('check_default_criterion')
         if not cls.objects.filter(default=True).exists():
             print('creating default criterion')
-            cls.objects.create(name='Обычный (100 баллов)', default=True, criterion_type=cls.KEY_TYPE)
-            cls.objects.create(name='Обычный текст (100 баллов)', default=True, criterion_type=cls.TEXT_TYPE)
+            cls.objects.create(name='Тест (100 баллов)', default=True, criterion_type=cls.KEY_TYPE)
+            cls.objects.create(name='Текст (100 баллов)', default=True, criterion_type=cls.TEXT_TYPE)

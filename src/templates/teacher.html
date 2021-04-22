@@ -169,6 +169,11 @@
         <form method="get" data-name="Neatly Dashboard" id="wf-form-Neatly-Dashboard" name="wf-form-Neatly-Dashboard" class="form-2">
           <h5 class="heading-131 login">Наименование</h5><input type="text" maxlength="256" id="name_create" required="" class="text-field-7 w-input">
           <h5 class="heading-131 login">Описание</h5><input type="text" maxlength="256" id="description_create" required="" class="text-field-7 w-input">
+          <select id="criterion_id" class="heading-131 login" style="margin-top: 10px; margin-bottom: 10px;">
+              {% for criterion in criterions %}
+                  <option value="{{ criterion.id }}">{{ criterion }}</option>
+              {% endfor %}
+          </select>
           <h5 class="heading-131 login">Загрузка файла</h5>
           <div class="form-submit-wrapper">
               <a onclick="upload_homework()" data-wait="Please wait..." class="form-button w-button">Отправить</a></div>

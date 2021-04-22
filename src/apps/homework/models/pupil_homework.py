@@ -29,6 +29,7 @@ class PupilHomework(SafeModel):
     mark = models.IntegerField(default=None, verbose_name=_('Оценка за домашнее задание'),
                                null=True, blank=True)
 
+    mistake_count = models.IntegerField(default=0, verbose_name=_('Кол-во ошибок'))
     status = models.IntegerField(default=WAIT, choices=STATUS_CHOICES, verbose_name=_('Статус'))
     is_hidden = models.BooleanField(default=False, editable=False)
 

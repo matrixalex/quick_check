@@ -14,6 +14,7 @@ from src.apps.homework import service
 
 class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
     model = Homework
+    criterion = None
     _fields = {
         'name': {
             'type': BaseCreateOrChangeView.FieldTypeEnumerate.STR,
@@ -27,25 +28,32 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
             'type': BaseCreateOrChangeView.FieldTypeEnumerate.FILE,
             'required': True,
             'validator': lambda document: (
-                    document.file_name.split('.')[-1] and document.file_name.split('.')[-1] in ['csv', 'xlsx'])
+                    document.file_name.split('.')[-1] and document.file_name.split('.')[-1]
+                    in  ['csv', 'xlsx', 'pdf', 'jpeg', 'png', 'svg'])
         }
     }
 
     def before_post(self, request):
+        criterion_id = int(request.data.get('criterion_id'))
+        self.criterion = Criterion.objects.get(id=criterion_id)
         return {
             'homework_teacher': request.user,
-            'homework_criterion': Criterion.objects.filter(default=True).first(),
-            'homework_marktype': MarkType.objects.filter(default=True).first()
+            'homework_criterion': self.criterion,
+            'homework_marktype': MarkType.objects.filter(default=True).first(),
         }
 
     def extra_post(self, request):
         pupils_id = request.data.get('pupils_id').split(',')
-        questions_data = service.parse_questions(self.obj.homework_document.file)
-        if questions_data:
+        if self.criterion.criterion_type == self.criterion.KEY_TYPE:
+            questions_data = service.parse_questions(self.obj.homework_document.file)
+            if questions_data:
+                for pupil_id in pupils_id:
+                    PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
+                for num, text, answer in questions_data:
+                    Question.objects.create(question_homework=self.obj, text=text, answer=answer, num=num)
+        else:
             for pupil_id in pupils_id:
                 PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
-            for num, text, answer in questions_data:
-                Question.objects.create(question_homework=self.obj, text=text, answer=answer, num=num)
 
 
 class HomeWorkDeleteView(BaseDeleteView):
