@@ -29,11 +29,12 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
             'required': True,
             'validator': lambda document: (
                     document.file_name.split('.')[-1] and document.file_name.split('.')[-1]
-                    in  ['csv', 'xlsx', 'pdf', 'jpeg', 'png', 'svg'])
+                    in ['csv', 'xlsx', 'pdf', 'jpeg', 'png', 'svg'])
         }
     }
 
     def before_post(self, request):
+        print('before post')
         criterion_id = int(request.data.get('criterion_id'))
         self.criterion = Criterion.objects.get(id=criterion_id)
         return {
@@ -43,6 +44,7 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
         }
 
     def extra_post(self, request):
+        print('extra post')
         pupils_id = request.data.get('pupils_id').split(',')
         if self.criterion.criterion_type == self.criterion.KEY_TYPE:
             questions_data = service.parse_questions(self.obj.homework_document.file)
