@@ -140,6 +140,7 @@ STATICFILES_DIRS = [
 ]
 
 AUTH_USER_MODEL = 'users.User'
+DEBUG_MOD = True
 
 # Логгирование проекта
 LOGGING = {

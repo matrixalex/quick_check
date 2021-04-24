@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
-
+from src.quick_check import settings
 from src.apps.core.errors import ErrorMessages
 from src.apps.core.excetions.main import FieldException
 from src.apps.core import service
@@ -141,14 +141,29 @@ class BaseCreateOrChangeView(BaseModelView):
         return {}
 
     def post(self, request):
+        if settings.DEBUG_MOD:
+            return self.unsafe_process(request)
+        else:
+            return self.safe_process(request)
+
+    def process_request(self, request):
+        self._work_fields = self.before_post(request)
+        self._work_fields.update(self.get_fields(request))
+        if 'id' in self._work_fields:
+            self.obj = self.change_object(self._work_fields)
+        else:
+            self.obj = self.create_object(self._work_fields)
+        self.extra_post(request)
+
+    def unsafe_process(self, request):
+        self.process_request(request)
+        if self.obj:
+            return Response({'result': {'status': True}}, HTTP_200_OK)
+        return Response({'result': {'message': 'Объект не был создан или изменен'}}, HTTP_400_BAD_REQUEST)
+
+    def safe_process(self, request):
         try:
-            self._work_fields = self.before_post(request)
-            self._work_fields.update(self.get_fields(request))
-            if 'id' in self._work_fields:
-                self.obj = self.change_object(self._work_fields)
-            else:
-                self.obj = self.create_object(self._work_fields)
-            self.extra_post(request)
+            self.process_request(request)
             if self.obj:
                 return Response({'result': {'status': True}}, HTTP_200_OK)
             return Response({'result': {'message': 'Объект не был создан или изменен'}}, HTTP_400_BAD_REQUEST)
