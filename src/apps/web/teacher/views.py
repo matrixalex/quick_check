@@ -52,8 +52,10 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
                 for num, text, answer in questions_data:
                     Question.objects.create(question_homework=self.obj, text=text, answer=answer, num=num)
         else:
+            text = service.parse_text(self.obj.homework_document.file)
             for pupil_id in pupils_id:
                 PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
+            Question.objects.create(question_homework=self.obj, text=text, answer=text, num=1)
 
 
 class HomeWorkDeleteView(BaseDeleteView):

@@ -20,6 +20,10 @@ def parse_questions(file_path):
     return result
 
 
+def parse_text(file_path):
+    return 'some_text'
+
+
 def get_question_results(file):
     """Отправление файла к машинке и получение ответов"""
     return []

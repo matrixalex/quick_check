@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.html import format_html
 from django.views import View
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
@@ -8,10 +9,11 @@ from src.apps.homework.models import PupilHomework, Question, QuestionResult, Ho
     SegmentationData, FontTemplate, Criterion
 from src.apps.homework.service import get_homework_result
 from src.apps.users.models import user_type
+from numpy import array, where
 
 
 def get_text(file_object):
-    return 'some_text', 5
+    return 'sama_tukc', 5
 
 
 class UploadHomeworkView(APIView):
@@ -49,6 +51,12 @@ class UploadHomeworkView(APIView):
             text, mistake_count = get_text(file)
             mark = homework.homework_exercise.homework_criterion.get_mark(mistake_count)
             homework.mistake_count = mistake_count
+            QuestionResult.objects.create(
+                pupil_homework=homework,
+                homework_question=Question.objects.filter(question_homework__pupil_homework_exercise=homework).first(),
+                answer=text,
+                is_correct=True
+            )
         homework.pupilhomework_document = document
         homework.status = PupilHomework.UPLOADED_HAS_ANSWER
         homework.mark = mark
@@ -73,19 +81,36 @@ class PupilHomeworkShowView(View):
             'homework_exercise'
         ).get(pk=homework_id)
         data = {'user': user, 'homework': homework}
+        data['is_teacher'] = request.user.status.id == user_type.TEACHER
         question_results = QuestionResult.objects.filter(
             pupil_homework=homework
         ).select_related('homework_question').order_by('homework_question__num')
-        no_answer_questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework).exclude(
-            questionresult_homework_question__in=question_results
-        )
-        no_answer_questions_count = no_answer_questions.count()
         data['question_results'] = question_results
-        data['is_teacher'] = request.user.status.id == user_type.TEACHER
-        data['correct_answers_count'] = question_results.filter(is_correct=True).count()
-        data['bad_answers_count'] = question_results.filter(is_correct=False).count() + no_answer_questions_count
-        data['no_answer_questions'] = no_answer_questions
-        data['all_count'] = question_results.count() + no_answer_questions_count
+        if homework.homework_exercise.homework_criterion.criterion_type == Criterion.KEY_TYPE:
+            no_answer_questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework).exclude(
+                questionresult_homework_question__in=question_results
+            )
+            no_answer_questions_count = no_answer_questions.count()
+            data['correct_answers_count'] = question_results.filter(is_correct=True).count()
+            data['bad_answers_count'] = question_results.filter(is_correct=False).count() + no_answer_questions_count
+            data['no_answer_questions'] = no_answer_questions
+            data['all_count'] = question_results.count() + no_answer_questions_count
+        else:
+            pupil_question = question_results.first()
+            question = pupil_question.homework_question
+            pupil_text = pupil_question.answer
+            correct_text = question.answer
+            data['pupil_text'] = pupil_text
+            data['correct_text'] = correct_text
+            pupil_text = array(list(pupil_text))
+            correct_text = array(list(correct_text))
+            if homework.mistake_count != 0:
+                mask = where(pupil_text != correct_text)
+                pupil_text = list(pupil_text)
+                for index in mask[0]:
+                    pupil_text[index] = '<b>{}</b>'.format(pupil_text[index])
+                pupil_text = format_html(''.join(pupil_text))
+                data['pupil_text'] = pupil_text
         return render(request, 'pupil_homework.html', context=data)
 
 
