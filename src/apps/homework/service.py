@@ -1,5 +1,7 @@
 import openpyxl
 from django.db.models import QuerySet
+from docx import Document
+
 from src.apps.neuro.answers import make_answer
 
 
@@ -20,8 +22,16 @@ def parse_questions(file_path):
     return result
 
 
-def parse_text(file_path):
-    return 'some_text'
+def parse_text(file_path: str):
+    if file_path.endswith('.docx'):
+        doc = Document(file_path)
+        text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+        return text
+    else:
+        # parse as txt
+        with open(file_path, 'r') as file:
+            text = file.read()
+            return text
 
 
 def get_question_results(file):

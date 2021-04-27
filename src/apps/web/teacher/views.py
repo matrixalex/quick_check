@@ -29,7 +29,7 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
             'required': True,
             'validator': lambda document: (
                     document.file_name.split('.')[-1] and document.file_name.split('.')[-1]
-                    in ['csv', 'xlsx', 'pdf', 'jpeg', 'png', 'svg'])
+                    in ['csv', 'xlsx', 'pdf', 'jpeg', 'png', 'svg', 'docx', 'txt'])
         }
     }
 
@@ -47,14 +47,14 @@ class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
         print('extra post')
         pupils_id = request.data.get('pupils_id').split(',')
         if self.criterion.criterion_type == self.criterion.KEY_TYPE:
-            questions_data = service.parse_questions(self.obj.homework_document.file)
+            questions_data = service.parse_questions(str(self.obj.homework_document.file))
             if questions_data:
                 for pupil_id in pupils_id:
                     PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
                 for num, text, answer in questions_data:
                     Question.objects.create(question_homework=self.obj, text=text, answer=answer, num=num)
         else:
-            text = service.parse_text(self.obj.homework_document.file)
+            text = service.parse_text(str(self.obj.homework_document.file))
             for pupil_id in pupils_id:
                 PupilHomework.objects.create(pupil_id=pupil_id, homework_exercise=self.obj)
             Question.objects.create(question_homework=self.obj, text=text, answer=text, num=1)

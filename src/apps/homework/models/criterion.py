@@ -39,7 +39,6 @@ class Criterion(SafeModel):
         return self.name
 
     def get_mark(self, complete_percent: int):
-        assert 0 <= complete_percent <= 100
         if self.criterion_type == self.TEXT_TYPE:
             print('its text')
             complete_percent = self.max_mistake_count - complete_percent
