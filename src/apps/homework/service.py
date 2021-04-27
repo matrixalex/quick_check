@@ -57,3 +57,62 @@ def get_homework_result(questions: QuerySet, file):
         if question not in has_answer_questions:
             result.append((question, '', False))
     return result, answers.data
+
+
+class SequenceAlignment(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.solution = []
+
+    delta = lambda self, x, y, i, j: 1 if x[i] != y[j] else 0
+
+    def find_solution(self, temp, m, n):
+        if m == 0 and n == 0:
+            return
+
+        insert = temp[m][n - 1] + 1 if n != 0 else float("inf")
+        align = (
+            temp[m - 1][n - 1] + self.delta(self.x, self.y, m - 1, n - 1)
+            if m != 0 and n != 0
+            else float("inf")
+        )
+        delete = temp[m - 1][n] + 1 if m != 0 else float("inf")
+
+        best_choice = min(insert, align, delete)
+
+        if best_choice == insert:
+            self.solution.append(True)
+            return self.find_solution(temp, m, n - 1)
+
+        elif best_choice == align:
+            mistake_flag = self.x[m-1] != self.y[n-1]
+            self.solution.append(mistake_flag)
+            return self.find_solution(temp, m - 1, n - 1)
+
+        elif best_choice == delete:
+            self.solution.append(True)
+            return self.find_solution(temp, m - 1, n)
+
+    def alignment(self):
+        n = len(self.y)
+        m = len(self.x)
+        temp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+
+        for i in range(1, m + 1):
+            temp[i][0] = i
+
+        for j in range(1, n + 1):
+            temp[0][j] = j
+
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                temp[i][j] = min(
+                    temp[i - 1][j - 1] + self.delta(self.x, self.y, i - 1, j - 1),
+                    temp[i - 1][j] + 1,
+                    temp[i][j - 1] + 1,
+                )
+
+        self.find_solution(temp, m, n)
+
+        return temp[m][n], self.solution[::-1]

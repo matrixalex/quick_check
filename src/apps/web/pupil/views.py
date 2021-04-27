@@ -7,13 +7,19 @@ from rest_framework.views import APIView
 from src.apps.core.service import upload_file, get_site_url
 from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult, \
     SegmentationData, FontTemplate, Criterion
-from src.apps.homework.service import get_homework_result
+from src.apps.homework.service import get_homework_result, SequenceAlignment
 from src.apps.users.models import user_type
-from numpy import array, where
 
 
-def get_text(file_object):
-    return 'sama_tukc', 5
+def parse_text_neuro(file_object):
+    return 'same_text'
+
+
+def get_text_homework_result(file_object, correct_text):
+    text = parse_text_neuro(file_object)
+    align = SequenceAlignment(correct_text, text)
+    mistake_count, mistakes = align.alignment()
+    return text, mistake_count
 
 
 class UploadHomeworkView(APIView):
@@ -48,12 +54,13 @@ class UploadHomeworkView(APIView):
                     pupil_homework=homework
                 )
         else:
-            text, mistake_count = get_text(file)
+            question = Question.objects.filter(question_homework__pupil_homework_exercise=homework).first()
+            text, mistake_count = get_text_homework_result(file, question.answer)
             mark = homework.homework_exercise.homework_criterion.get_mark(mistake_count)
             homework.mistake_count = mistake_count
             QuestionResult.objects.create(
                 pupil_homework=homework,
-                homework_question=Question.objects.filter(question_homework__pupil_homework_exercise=homework).first(),
+                homework_question=question,
                 answer=text,
                 is_correct=True
             )
@@ -80,8 +87,7 @@ class PupilHomeworkShowView(View):
             'pupilhomework_document',
             'homework_exercise'
         ).get(pk=homework_id)
-        data = {'user': user, 'homework': homework}
-        data['is_teacher'] = request.user.status.id == user_type.TEACHER
+        data = {'user': user, 'homework': homework, 'is_teacher': request.user.status.id == user_type.TEACHER}
         question_results = QuestionResult.objects.filter(
             pupil_homework=homework
         ).select_related('homework_question').order_by('homework_question__num')
@@ -102,15 +108,18 @@ class PupilHomeworkShowView(View):
             correct_text = question.answer
             data['pupil_text'] = pupil_text
             data['correct_text'] = correct_text
-            pupil_text = array(list(pupil_text))
-            correct_text = array(list(correct_text))
             if homework.mistake_count != 0:
-                mask = where(pupil_text != correct_text)
                 pupil_text = list(pupil_text)
-                for index in mask[0]:
-                    pupil_text[index] = '<b>{}</b>'.format(pupil_text[index])
-                pupil_text = format_html(''.join(pupil_text))
-                data['pupil_text'] = pupil_text
+                align = SequenceAlignment(correct_text, pupil_text)
+                mistake_count, mistakes = align.alignment()
+                for i, mistake_flag in enumerate(mistakes):
+                    try:
+                        if mistake_flag:
+                            pupil_text[i] = '<b>{}</b>'.format(pupil_text[i])
+                    except:
+                        pass
+                pupil_text = ''.join(pupil_text)
+                data['pupil_text'] = format_html(pupil_text)
         return render(request, 'pupil_homework.html', context=data)
 
 
