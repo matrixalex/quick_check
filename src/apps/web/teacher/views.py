@@ -64,6 +64,15 @@ class HomeWorkDeleteView(BaseDeleteView):
     model = Homework
 
 
+class HomeWorkMassUploadView(APIView):
+    def post(self, request):
+        homework_id = int(request.data.get('homework_id'))
+        file = request.data.get('file')
+        print(homework_id)
+        print(file)
+        return Response(data={'status': True}, status=HTTP_200_OK)
+
+
 class HomeworkShowView(View):
     @staticmethod
     def get(request, homework_id):

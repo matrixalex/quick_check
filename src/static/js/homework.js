@@ -171,3 +171,44 @@ function delete_appeal(appeal_id){
         }
     })
 }
+
+function upload_homeworks_by_teacher(){
+    let data = new FormData();
+    let file = null;
+    try {
+        file = document.getElementById("homeworks_file").files[0];
+    } catch (e){}
+    if (file == null){
+        alert("Выберите файл");
+        return;
+    }
+    data.append("homework_id", homework_id);
+    data.append("file", file);
+    $.ajax({
+        url: "/teacher/homework/upload",
+        type: "post",
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        data: data,
+        success: function (data){
+            window.location.reload();
+        },
+        error: function (data){
+            alert(data.responseJSON.result.message);
+        }
+    })
+}
+
+function upload_homeworks_by_teacher_form_show(id){
+    homework_id = id;
+    document.getElementById("upload_homeworks_by_teacher_form").style.display = 'flex';
+    document.getElementById("upload_homeworks_by_teacher_form").style.zIndex = 5;
+    document.getElementById("upload_homeworks_by_teacher_form").style.opacity = 100;
+}
+
+function upload_homeworks_by_teacher_form_show_hide(){
+    document.getElementById("upload_homeworks_by_teacher_form").style.display = 'none';
+    document.getElementById("upload_homeworks_by_teacher_form").style.zIndex = 5;
+    document.getElementById("upload_homeworks_by_teacher_form").style.opacity = 0;
+}
