@@ -1,8 +1,13 @@
+import os
+
 import openpyxl
+import uuid
 from django.db.models import QuerySet
 from docx import Document
 
+from src.apps.core.service import upload_file
 from src.apps.neuro.answers import make_answer
+from src.quick_check.settings import MEDIA_ROOT
 
 
 def parse_questions(file_path):
@@ -32,6 +37,29 @@ def parse_text(file_path: str):
         with open(file_path, 'r') as file:
             text = file.read()
             return text
+
+
+def extract_images_and_text_as_list(file_path):
+    doc = Document(file_path)
+    pupils = []
+    images = []
+    for paragraph in doc.paragraphs:
+        if paragraph.text:
+            pupils.append(paragraph.text)
+
+    for shape in doc.inline_shapes:
+        content_id = shape._inline.graphic.graphicData.pic.blipFill.blip.embed
+        content_type = doc.part.related_parts[content_id].content_type
+        if not content_type.startswith('image'):
+            continue
+        img_format = str(doc.part.related_parts[content_id].partname).strip('.')[-1]
+        img_name = '{}.{}'.format(uuid.uuid4(), img_format)
+        image_data = doc.part.related_parts[content_id]._blob
+        image_file_path = os.path.join(MEDIA_ROOT, img_name)
+        with open(image_file_path, 'wb') as file:
+            file.write(image_data)
+        images.append(upload_file(image_file_path))
+    return pupils, images
 
 
 def get_question_results(file):

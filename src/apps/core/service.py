@@ -10,6 +10,9 @@ from .models import Document, Organization, StudyClass
 import uuid
 import os
 
+from ..homework.models import Homework
+from ..users.models import User
+
 
 def get_time_now() -> datetime:
     """
@@ -26,15 +29,19 @@ def parse_date(date_str: str) -> date:
 
 def upload_file(file_object) -> Document:
     """Загрузка файла"""
-    file_name = '{}.{}'.format(uuid.uuid4(), file_object.name.split('.')[-1])
-    file_path = os.path.join(settings.MEDIA_ROOT, file_name)
-    with open(file_path, 'wb+') as file:
-        for chunk in file_object.chunks():
-            file.write(chunk)
-    try:
-        return Document.objects.create(file=file_path, file_name=file_object.name)
-    except Exception as e:
-        print(repr(e))
+    if isinstance(file_object, str):
+        file_name = file_object.replace('\\', '/').split('/')[-1]
+        Document.objects.create(file=file_object, file_name=file_name)
+    else:
+        file_name = '{}.{}'.format(uuid.uuid4(), file_object.name.split('.')[-1])
+        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+        with open(file_path, 'wb+') as file:
+            for chunk in file_object.chunks():
+                file.write(chunk)
+        try:
+            return Document.objects.create(file=file_path, file_name=file_object.name)
+        except Exception as e:
+            print(repr(e))
 
 
 def get_all_orgs() -> QuerySet:
@@ -97,3 +104,22 @@ def get_study_classes(org: Organization = None) -> QuerySet:
     if org:
         return StudyClass.objects.filter(org=org)
     return StudyClass.objects.all()
+
+
+def search_user(user_str: str, teacher: User = None, homework: Homework = None) -> Optional[User]:
+    names = user_str.split()
+    last_name = names[0].lower()
+    first_name = names[1].lower()
+    middle_name = names[2].lower()
+    users = User.objects.filter(
+        last_name__iexact=last_name,
+        first_name__iexact=first_name,
+        middle_name__iexact=middle_name
+    )
+    if teacher:
+        users = users.filter(study_class__teachers__in=teacher)
+    if homework:
+        users = users.filter(pupil_homework_pupil__homework_exercise=homework)
+    if users.exists:
+        return users.first()
+    return None

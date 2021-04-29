@@ -1,4 +1,3 @@
-from django.db.models import Subquery, OuterRef, Count, Exists
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
@@ -6,10 +5,13 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 
 from src.apps.core.api import BaseDeleteView, BaseCreateOrChangeView
+from src.apps.core.service import upload_file, search_user
 
 from src.apps.homework.models import Homework, Question, HomeworkAppeal, PupilHomework, Criterion, MarkType, \
     QuestionResult, AppealResult
 from src.apps.homework import service
+from src.apps.homework.service import extract_images_and_text_as_list
+from src.apps.web.pupil.views import handle_homework_upload
 
 
 class CreateOrChangeHomeworkView(BaseCreateOrChangeView):
@@ -68,8 +70,27 @@ class HomeWorkMassUploadView(APIView):
     def post(self, request):
         homework_id = int(request.data.get('homework_id'))
         file = request.data.get('file')
-        print(homework_id)
-        print(file)
+        file = upload_file(file)
+        pupils, images = extract_images_and_text_as_list(str(file.file))
+        homework = Homework.objects.get(pk=homework_id)
+        pupil_homeworks = PupilHomework.objects.filter(homework_exercise=homework)
+        pupils = [
+            search_user(
+                user_str,
+                homework=homework,
+                teacher=request.user
+            ) for user_str in pupils
+        ]
+        if None in pupils:
+            pupils.remove(None)
+        pupils = list(set(pupils))
+
+        min_len = min(len(pupils), len(images))
+        for i in range(min_len):
+            pupil = pupils[i]
+            image = images[i]
+            pupil_homework = pupil_homeworks.get(pupil=pupil)
+            handle_homework_upload(pupil_homework, image)
         return Response(data={'status': True}, status=HTTP_200_OK)
 
 

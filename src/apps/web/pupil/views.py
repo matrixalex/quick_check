@@ -6,20 +6,62 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from src.apps.core.service import upload_file, get_site_url
 from src.apps.homework.models import PupilHomework, Question, QuestionResult, HomeworkAppeal, AppealResult, \
-    SegmentationData, FontTemplate, Criterion
-from src.apps.homework.service import get_homework_result, SequenceAlignment
+    FontTemplate, Criterion, SegmentationData
+from src.apps.homework.service import SequenceAlignment, get_homework_result
 from src.apps.users.models import user_type
 
 
-def parse_text_neuro(file_object):
+def parse_text_neuro(file_path):
     return 'same_text'
 
 
-def get_text_homework_result(file_object, correct_text):
-    text = parse_text_neuro(file_object)
+def get_text_homework_result(file_path, correct_text):
+    text = parse_text_neuro(file_path)
     align = SequenceAlignment(correct_text, text)
     mistake_count, mistakes = align.alignment()
     return text, mistake_count
+
+
+def handle_homework_upload(homework: PupilHomework, document):
+    if homework.homework_exercise.homework_criterion.criterion_type == Criterion.KEY_TYPE:
+        questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework)
+        homework_result = get_homework_result(questions, str(document.file))
+        count = 0
+        for question, answer, check in homework_result[0]:
+            QuestionResult.objects.create(
+                pupil_homework=homework,
+                homework_question=question,
+                answer=answer,
+                is_correct=check
+            )
+            if check:
+                count += 1
+        mark = homework.homework_exercise.homework_criterion.get_mark(count / questions.count())
+        for segment_data in homework_result[1]:
+            SegmentationData.objects.create(
+                x_start=segment_data[0],
+                y_start=segment_data[1],
+                x_end=segment_data[2],
+                y_end=segment_data[3],
+                answer=segment_data[4],
+                pupil_homework=homework
+            )
+    else:
+        question = Question.objects.filter(question_homework__pupil_homework_exercise=homework).first()
+        text, mistake_count = get_text_homework_result(str(document.file), question.answer)
+        mark = homework.homework_exercise.homework_criterion.get_mark(mistake_count)
+        homework.mistake_count = mistake_count
+        QuestionResult.objects.create(
+            pupil_homework=homework,
+            homework_question=question,
+            answer=text,
+            is_correct=True
+        )
+    homework.pupilhomework_document = document
+    homework.status = PupilHomework.UPLOADED_HAS_ANSWER
+    homework.mark = mark
+    homework.save()
+
 
 
 class UploadHomeworkView(APIView):
@@ -30,44 +72,7 @@ class UploadHomeworkView(APIView):
         homework = PupilHomework.objects.get(pk=homework_id)
         file = request.data.get('file')
         document = upload_file(file)
-        if homework.homework_exercise.homework_criterion.criterion_type == Criterion.KEY_TYPE:
-            questions = Question.objects.filter(question_homework__pupil_homework_exercise=homework)
-            homework_result = get_homework_result(questions, str(document.file))
-            count = 0
-            for question, answer, check in homework_result[0]:
-                QuestionResult.objects.create(
-                    pupil_homework=homework,
-                    homework_question=question,
-                    answer=answer,
-                    is_correct=check
-                )
-                if check:
-                    count += 1
-            mark = homework.homework_exercise.homework_criterion.get_mark(count / questions.count())
-            for segment_data in homework_result[1]:
-                SegmentationData.objects.create(
-                    x_start=segment_data[0],
-                    y_start=segment_data[1],
-                    x_end=segment_data[2],
-                    y_end=segment_data[3],
-                    answer=segment_data[4],
-                    pupil_homework=homework
-                )
-        else:
-            question = Question.objects.filter(question_homework__pupil_homework_exercise=homework).first()
-            text, mistake_count = get_text_homework_result(file, question.answer)
-            mark = homework.homework_exercise.homework_criterion.get_mark(mistake_count)
-            homework.mistake_count = mistake_count
-            QuestionResult.objects.create(
-                pupil_homework=homework,
-                homework_question=question,
-                answer=text,
-                is_correct=True
-            )
-        homework.pupilhomework_document = document
-        homework.status = PupilHomework.UPLOADED_HAS_ANSWER
-        homework.mark = mark
-        homework.save()
+        handle_homework_upload(homework, document)
 
     def post(self, request):
         # try:
