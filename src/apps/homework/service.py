@@ -45,14 +45,15 @@ def extract_images_and_text_as_list(file_path):
     images = []
     for paragraph in doc.paragraphs:
         if paragraph.text:
-            pupils.append(paragraph.text)
+            pupils.append(str(paragraph.text).lower())
 
     for shape in doc.inline_shapes:
         content_id = shape._inline.graphic.graphicData.pic.blipFill.blip.embed
         content_type = doc.part.related_parts[content_id].content_type
         if not content_type.startswith('image'):
             continue
-        img_format = str(doc.part.related_parts[content_id].partname).strip('.')[-1]
+        # img_format = str(doc.part.related_parts[content_id].partname).strip('.')[-1]
+        img_format = 'jpeg'
         img_name = '{}.{}'.format(uuid.uuid4(), img_format)
         image_data = doc.part.related_parts[content_id]._blob
         image_file_path = os.path.join(MEDIA_ROOT, img_name)

@@ -63,7 +63,6 @@ def handle_homework_upload(homework: PupilHomework, document):
     homework.save()
 
 
-
 class UploadHomeworkView(APIView):
     """Загрузка домашней работы учеником."""
 

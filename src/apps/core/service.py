@@ -31,7 +31,7 @@ def upload_file(file_object) -> Document:
     """Загрузка файла"""
     if isinstance(file_object, str):
         file_name = file_object.replace('\\', '/').split('/')[-1]
-        Document.objects.create(file=file_object, file_name=file_name)
+        return Document.objects.create(file=file_object, file_name=file_name)
     else:
         file_name = '{}.{}'.format(uuid.uuid4(), file_object.name.split('.')[-1])
         file_path = os.path.join(settings.MEDIA_ROOT, file_name)
@@ -117,7 +117,7 @@ def search_user(user_str: str, teacher: User = None, homework: Homework = None) 
         middle_name__iexact=middle_name
     )
     if teacher:
-        users = users.filter(study_class__teachers__in=teacher)
+        users = users.filter(study_class__teachers__in=[teacher])
     if homework:
         users = users.filter(pupil_homework_pupil__homework_exercise=homework)
     if users.exists:

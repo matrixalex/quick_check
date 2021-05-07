@@ -84,7 +84,6 @@ class HomeWorkMassUploadView(APIView):
         if None in pupils:
             pupils.remove(None)
         pupils = list(set(pupils))
-
         min_len = min(len(pupils), len(images))
         for i in range(min_len):
             pupil = pupils[i]
