@@ -22,7 +22,7 @@ app.conf.update(
 )
 
 app.conf.beat_schedule = {
-    'generate_codes': {
+    'update_neuro_data': {
         'task': 'src.apps.celery.tasks.update_neuro_data',
         # 'schedule': crontab(hour='*/24'),
         'schedule': crontab(minute='*/1'),

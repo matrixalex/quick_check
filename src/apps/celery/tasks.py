@@ -18,9 +18,11 @@ def get_pupils_set(segments):
 
 def train_neuro(data, num_of_epochs=200, batch_size=28, pupil=None):
     model = mach1()
-    if pupil:
+    if pupil and pupil.neuro_data:
+        model.load_state_dict(torch.load(str(pupil.neuro_data.file)))
+    else:
         model.load_state_dict(torch.load(DEFAULT_TRAIN_DATA_PATH))
-        model.eval()
+    model.eval()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     loss_func = torch.nn.NLLLoss()
     epoch = 0
@@ -50,7 +52,7 @@ def train_neuro(data, num_of_epochs=200, batch_size=28, pupil=None):
         if pupil.neuro_data:
             torch.save(model.state_dict(), str(pupil.neuro_data.file))
         else:
-            file_name = str(uuid.uuid4())
+            file_name = str(uuid.uuid4()) + '.d'
             file_path = MEDIA_ROOT + '/' + file_name
             torch.save(model.state_dict(), file_path)
             doc = Document.objects.create(file=file_path, file_name=file_name)
@@ -67,9 +69,9 @@ def update_neuro_data():
         'pupil_homework', 'pupil_homework__pupil'
     ).filter(pupil_homework__status=PupilHomework.UPLOADED_HAS_ANSWER)
 
-    # TODO Обучение дефолтной модели
+    train_neuro(segments_data)
     pupils = get_pupils_set(segments_data)
     for pupil in pupils:
         pupil_segments_data = segments_data.filter(pupil_homework__pupil=pupil)
-        # TODO Обучение модели ученика
+        train_neuro(pupil_segments_data, pupil=pupil)
     print('update_neuro_data end')
