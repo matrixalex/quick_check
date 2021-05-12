@@ -34,13 +34,23 @@ def train_neuro(data, num_of_epochs=200, batch_size=28, pupil=None):
             batch_data = data[k*batch_size:(k+1)*batch_size]
             for segment in batch_data:
                 img = cv2.imread(str(segment.pupil_homework.pupilhomework_document.file))
-                img = img[segment.x_start:segment.x_end, segment.y_start:segment.y_end, :]
-                img = cv2.resize(img, (100, 100))
-                img = np.rollaxis(img, 2, 0)
-                img = normalize(img)
-                x.append(img)
-                y.append(segment.answer)
+                image = img[segment.x_start:segment.x_end, segment.y_start:segment.y_end, :]
+                if image.size > 0:
+                    image = cv2.resize(image, (100, 100))
+                    image = np.rollaxis(image, 2, 0)
+                    image = normalize(image)
+                    x.append(image)
+                    y.append(segment.answer)
+                else:
+                    print('problem with segment {}:{}, {}:{} of homework {}'.format(
+                        segment.x_start, segment.x_end, segment.y_start, segment.y_end, segment.pupil_homework
+                    ))
+            print('learning')
+            print(x)
+            print(y)
             x = torch.autograd.Variable(torch.Tensor(x))
+            # Проблема в Y ValueError: too many dimensions 'str'
+            # Y: ['0', 'б', '9', '0', 'е', '0', '9', 'е', '9', '0']
             y = torch.autograd.Variable(torch.Tensor(y))
             output = model(x)
             out = loss_func(output, y)

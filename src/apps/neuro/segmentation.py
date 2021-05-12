@@ -153,7 +153,6 @@ def wordSegmentation(image, show=False, smoothness=45, kernelSize=19, sigma=9, t
     return res_lines
 
 
-
 def analyse_image(N_of_questions, filename, model, dictpath):
     img = plt.imread(filename)
     image = img.copy()
@@ -161,7 +160,6 @@ def analyse_image(N_of_questions, filename, model, dictpath):
     img = cv2.resize(img, (1200, 1600))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     lines = []
-    i=0
     for im in lineSegmentation(img.transpose()):
         lines.append(im)
     words = []
