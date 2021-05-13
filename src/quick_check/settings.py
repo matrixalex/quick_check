@@ -199,7 +199,8 @@ BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 
-
-DEFAULT_TRAIN_DATA_PATH = 'src/apps/neuro/data/model2_350_epochs.d'
+DEFAULT_KEYS_TRAIN_DATA_PATH = 'src/apps/neuro/data/model2_350_epochs.d'
+DEFAULT_TEXT_TRAIN_DATA_PATH = 'src/apps/neuro/data/model2_350_epochs.d'
+DEFAULT_TRAIN_DATA_PATH = DEFAULT_KEYS_TRAIN_DATA_PATH
 ML_MODEL = get_model(DEFAULT_TRAIN_DATA_PATH)
 # print('ML_MODEL INITIALIZED WITH PARAMETERS COUNT {}'.format(len(list(ML_MODEL.parameters()))))
